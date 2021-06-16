@@ -1,2 +1,10 @@
+django
+djangorestframework
+django-filter
+psycopg2-binary
+celery
+
 httpx[http2]
 beautifulsoup4
+aiofile
+unidecode
