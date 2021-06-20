@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13-alpine
+    env_file: docker/postgres/.env
+    restart: unless-stopped
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  rabbitmq:
+    image: rabbitmq:3.8-alpine
+    container_name: rabbitmq
+    hostname: aletheia
+    env_file: docker/rabbitmq/.env
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+  django:
+    build:
+      context: .
+      target: django
+    container_name: django
+    command: ["./manage.py", "runserver", "0.0.0.0:8000"]
+    volumes: 
+      - ./:/opt/app
+      - static_files:/opt/app/static
+    env_file: .env
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    depends_on: 
+      - postgres
+      - rabbitmq
+  celery_worker:
+    build:
+      context: .
+      target: celery-worker
+    container_name: celery_worker
+    volumes: 
+      - ./:/opt/app
+      - static_files:/opt/app/static
+    env_file: .env
+    command: ["celery", "-A", "aletheia", "worker", "-l", "INFO"]
+    restart: unless-stopped
+    depends_on: 
+      - postgres
+      - rabbitmq
+  celery_beat:
+    build:
+      context: .
+      target: celery-beat
+    container_name: celery_beat
+    command: ["celery", "-A", "aletheia", "beat", "-l", "INFO"]
+    volumes: 
+      - ./:/opt/app
+      - static_files:/opt/app/static
+    env_file: .env
+    restart: unless-stopped
+    depends_on: 
+      - postgres
+      - rabbitmq
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  static_files:

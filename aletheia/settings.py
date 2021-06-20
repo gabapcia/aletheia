@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
+    'rfb_cnpj',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +73,22 @@ TEMPLATES = [
 ]
 
 ASGI_APPLICATION = 'aletheia.asgi.application'
+
+
+# RabbitMQ configuration
+
+RABBITMQ_USERNAME = os.environ['RABBITMQ_USERNAME']
+RABBITMQ_PASSWORD = os.environ['RABBITMQ_PASSWORD']
+RABBITMQ_HOST = os.environ['RABBITMQ_HOST']
+RABBITMQ_PORT = os.environ['RABBITMQ_PORT']
+
+
+# Celery configuration
+
+CELERY_BROKER_URL = f'pyamqp://{RABBITMQ_USERNAME}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:{RABBITMQ_PORT}//'
+CELERY_ACKS_LATE = True
+CELERY_IGNORE_RESULT = True
+CELERY_BEAT_SCHEDULE = {}
 
 
 # Django REST Framework
@@ -121,7 +139,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
