@@ -91,7 +91,7 @@ class Simples(PostgresModel):
         YES = 1, 'SIM'
         NO = 2, 'NÃO'
         OTHER = 3, 'OUTROS'
-    
+
     class MeiOption(models.IntegerChoices):
         YES = 1, 'SIM'
         NO = 2, 'NÃO'

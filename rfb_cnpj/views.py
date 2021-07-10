@@ -1,9 +1,8 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
-from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from .serializers import EstablishmentSerializer
-from .models import Establishment, Partner
+from .models import Establishment
 from .filters import EstablishmentFilter
 
 

@@ -1,4 +1,3 @@
-import re
 from dataclasses import dataclass
 from datetime import date, datetime
 import httpx
@@ -40,7 +39,7 @@ class Client:
                 return datetime.strptime(text.split(':')[-1].strip(), '%d/%m/%Y').date()
 
         raise ValueError('It was not possible to extract the generation date from the files')
-                
+
     def _get_company_uris(self, content: BeautifulSoup) -> list[str]:
         links = []
         for a in content.find_all('a'):
@@ -75,8 +74,3 @@ class Client:
                 return a['href']
 
         raise ValueError('"informacoes sobre o simples nacional/mei" file URI not found')
-
-
-if __name__ == '__main__':
-    import asyncio
-    asyncio.run(Client().summary())

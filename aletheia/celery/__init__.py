@@ -1,1 +1,1 @@
-from .conf import app
+from .conf import app # noqa

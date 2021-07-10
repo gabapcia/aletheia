@@ -131,7 +131,7 @@ class Engine:
                 }[line['mei_option'].strip().upper()]
 
                 try:
-                    company=Company.objects.get(base_cnpj=line['base_cnpj'])
+                    company = Company.objects.get(base_cnpj=line['base_cnpj'])
                 except Company.DoesNotExist:
                     print(f"Missing base CNPJ: {line['base_cnpj']}")
                     continue
