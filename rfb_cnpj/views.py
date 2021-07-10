@@ -8,7 +8,7 @@ from .filters import EstablishmentFilter
 
 class EstablishmentViewSet(GenericViewSet, ListModelMixin):
     serializer_class = EstablishmentSerializer
-    queryset = Establishment.objects.all()
+    queryset = Establishment.objects.filter(release__finished=True)
     filterset_class = EstablishmentFilter
 
     @extend_schema(

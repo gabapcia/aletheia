@@ -1,4 +1,6 @@
 import asyncio
+import shutil
+from contextlib import suppress
 from enum import IntEnum
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -21,6 +23,16 @@ class FileType(IntEnum):
 
 
 @shared_task(base=RetryTask)
+def clean(release_id: str) -> None:
+    release = Release.objects.get(pk=release_id)
+
+    with suppress(FileNotFoundError):
+        shutil.rmtree(release.folder)
+
+    Release.objects.exclude(pk=release_id).delete()
+
+
+@shared_task(base=RetryTask)
 def insert(task_id: str) -> None:
     task: InsertionTask = InsertionTask.objects.get(pk=task_id)
     release: Release = task.release
@@ -35,6 +47,8 @@ def insert(task_id: str) -> None:
     if all(tasks_finished):
         release.finished = True
         release.save()
+
+        clean.s(release_id=release.pk).apply_async()
 
 
 @shared_task(base=RetryTask)
@@ -92,7 +106,7 @@ def sync() -> None:
     rfb_client = Client()
     r = asyncio.run(rfb_client.summary())
 
-    folder: Path = settings.DOWNLOAD_ROOT / r.generated_at.isoformat()
+    folder: Path = settings.DOWNLOAD_ROOT / f"RFBCNPJ-{r.generated_at.isoformat()}"
 
     try:
         release = Release.objects.create(release_date=r.generated_at, folder=folder.as_posix())
