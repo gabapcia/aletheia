@@ -131,3 +131,4 @@ dmypy.json
 # Local
 .vscode/
 schema.yml
+public/

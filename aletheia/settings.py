@@ -126,7 +126,7 @@ REST_FRAMEWORK = {
 # DRF Spectacular
 
 SPECTACULAR_SETTINGS = {
-    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
+    'SCHEMA_PATH_PREFIX': '/api',
     'TITLE': 'Aletheia API',
     'SERVE_INCLUDE_SCHEMA': False,
 }

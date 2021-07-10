@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.db.models import UniqueConstraint, Index, Q
+from django.contrib.postgres.fields import ArrayField
 from psqlextra.models import PostgresModel
 
 
@@ -149,6 +150,7 @@ class Establishment(PostgresModel):
     country = models.CharField(max_length=512, help_text='País')
     activity_start_date = models.DateField(help_text='Data de início das atividades')
     main_cnae = models.CharField(max_length=7, help_text='CNAE Fiscal Principal')
+    secondary_cnaes = ArrayField(models.CharField(max_length=7), default=list, help_text='CNAEs secundários')
     street_type = models.CharField(max_length=512, help_text='Descrição do tipo de logradouro')
     place = models.CharField(max_length=512, help_text='Logradouro onde se localiza o estabelecimento')
     number = models.CharField(max_length=100, help_text='Número onde se localiza o estabelecimento')

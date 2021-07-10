@@ -248,6 +248,7 @@ class Engine:
                         else None
                     ),
                     main_cnae=line['main_cnae'],
+                    secondary_cnaes=line['secondary_cnaes'].split(','),
                     street_type=line['street_type'],
                     place=line['place'],
                     number=line['number'],
