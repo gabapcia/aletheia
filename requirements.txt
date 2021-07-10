@@ -1,9 +1,10 @@
 django
 djangorestframework
 django-filter
+django-postgres-extra
 psycopg2-binary
-celery
-
+drf-spectacular
+celery[redis]
 httpx[http2]
 beautifulsoup4
 aiofile

@@ -39,8 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
+    'psqlextra',
     'rest_framework',
     'django_filters',
+    'drf_spectacular',
     'rfb_cnpj',
 ]
 
@@ -77,26 +80,55 @@ ASGI_APPLICATION = 'aletheia.asgi.application'
 
 # RabbitMQ configuration
 
-RABBITMQ_USERNAME = os.environ['RABBITMQ_USERNAME']
-RABBITMQ_PASSWORD = os.environ['RABBITMQ_PASSWORD']
-RABBITMQ_HOST = os.environ['RABBITMQ_HOST']
-RABBITMQ_PORT = os.environ['RABBITMQ_PORT']
+REDIS_HOST = os.environ['REDIS_HOST']
+REDIS_PORT = os.environ['REDIS_PORT']
 
 
 # Celery configuration
 
-CELERY_BROKER_URL = f'pyamqp://{RABBITMQ_USERNAME}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:{RABBITMQ_PORT}//'
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}'
+CELERY_TIMEZONE = 'America/Sao_Paulo'
 CELERY_ACKS_LATE = True
+CELERY_ACKS_ON_FAILURE_OR_TIMEOUT = False
 CELERY_IGNORE_RESULT = True
-CELERY_BEAT_SCHEDULE = {}
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
+CELERY_TASK_TRACK_STARTED = True
+CELERY_DEFAULT_DELIVERY_MODE = 'persistent'
+CELERY_BEAT_SYNC_EVERY = 1
+CELERY_BEAT_SCHEDULE = {
+    # RFB CNPJ
+    'sync_rfb_cnpjs': {
+        'task': 'rfb_cnpj.tasks.sync',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    'healthcheck_rfb_cnpj_tasks': {
+        'task': 'rfb_cnpj.tasks.healthcheck',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+}
 
 
 # Django REST Framework
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
-    'PAGE_SIZE': 100,
+    'DEFAULT_PAGINATION_CLASS': 'aletheia.pagination.PageLimitPagination',
+    'PAGINATION': {
+        'PAGE_PARAM': 'page',
+        'LIMIT_PARAM': 'limit',
+        'MAX_LIMIT_VALUE': 100,
+        'ORDERING_KEY': '-created_at',
+    },
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+
+# DRF Spectacular
+
+SPECTACULAR_SETTINGS = {
+    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
+    'TITLE': 'Aletheia API',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 
@@ -105,7 +137,7 @@ REST_FRAMEWORK = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'psqlextra.backend',
         'NAME': os.environ['DATABASE_NAME'],
         'USER': os.environ['DATABASE_USER'],
         'PASSWORD': os.environ['DATABASE_PASSWORD'],
@@ -154,6 +186,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'public' / 'static'
 
+DOWNLOAD_ROOT = BASE_DIR / 'downloads'
+DOWNLOAD_ROOT.mkdir(exist_ok=True)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

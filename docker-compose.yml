@@ -3,18 +3,19 @@ version: '3.8'
 services:
   postgres:
     image: postgres:13-alpine
-    env_file: docker/postgres/.env
     restart: unless-stopped
     container_name: postgres
+    environment:
+      POSTGRES_USER: aletheia
+      POSTGRES_PASSWORD: aletheia
+      POSTGRES_DB: aletheia
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  rabbitmq:
-    image: rabbitmq:3.8-alpine
-    container_name: rabbitmq
-    hostname: aletheia
-    env_file: docker/rabbitmq/.env
+  redis:
+    image: redis:6-alpine
+    container_name: redis
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - redis_data:/data
   django:
     build:
       context: .
@@ -30,7 +31,7 @@ services:
       - 8000:8000
     depends_on: 
       - postgres
-      - rabbitmq
+      - redis
   celery_worker:
     build:
       context: .
@@ -38,13 +39,12 @@ services:
     container_name: celery_worker
     volumes: 
       - ./:/opt/app
-      - static_files:/opt/app/static
     env_file: .env
     command: ["celery", "-A", "aletheia", "worker", "-l", "INFO"]
     restart: unless-stopped
     depends_on: 
       - postgres
-      - rabbitmq
+      - redis
   celery_beat:
     build:
       context: .
@@ -53,14 +53,13 @@ services:
     command: ["celery", "-A", "aletheia", "beat", "-l", "INFO"]
     volumes: 
       - ./:/opt/app
-      - static_files:/opt/app/static
     env_file: .env
     restart: unless-stopped
     depends_on: 
       - postgres
-      - rabbitmq
+      - redis
 
 volumes:
   postgres_data:
-  rabbitmq_data:
+  redis_data:
   static_files:

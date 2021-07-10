@@ -5,6 +5,8 @@ RUN apt-get install -y --no-install-recommends g++ netcat
 
 WORKDIR /opt/app
 
+ENV PYTHONUNBUFFERED 1
+
 RUN pip install -U pip
 COPY ./requirements.txt .
 RUN pip install -Ur requirements.txt
@@ -14,6 +16,7 @@ COPY . .
 RUN useradd -ms /bin/bash aletheia
 RUN chown -R aletheia /opt/app
 USER aletheia
+
 
 FROM base AS celery-beat
 CMD ["celery", "-A", "aletheia", "beat", "-l", "WARNING"]
