@@ -3,6 +3,6 @@ from .views import PersonViewSet
 
 
 router = DefaultRouter()
-router.register(r'people', PersonViewSet, basename='people')
+router.register('', PersonViewSet, basename='people')
 
 urlpatterns = router.urls

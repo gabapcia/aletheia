@@ -6,7 +6,7 @@ from .models import Person
 
 class PersonFilter(filters.FilterSet):
     name = filters.CharFilter(method='filter_name', label='Nome do PEP')
-    cpf = filters.CharFilter(method='filter_cpf', label='CPF/CNPJ do PEP')
+    cpf = filters.CharFilter(method='filter_cpf', label='CPF do PEP')
 
     def filter_partner_name(self, queryset: QuerySet, name: str, value: str) -> QuerySet:
         return queryset.filter(name=value.upper())

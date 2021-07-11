@@ -3,6 +3,6 @@ from .views import EstablishmentViewSet
 
 
 router = DefaultRouter()
-router.register(r'companies', EstablishmentViewSet, basename='companies')
+router.register('', EstablishmentViewSet, basename='companies')
 
 urlpatterns = router.urls
