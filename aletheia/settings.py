@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_spectacular',
     'rfb_cnpj',
+    'cgu_pep',
 ]
 
 MIDDLEWARE = [
@@ -103,6 +104,15 @@ CELERY_BEAT_SCHEDULE = {
     },
     'healthcheck_rfb_cnpj_tasks': {
         'task': 'rfb_cnpj.tasks.healthcheck',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    # CGU PEP
+    'sync_cgu_peps': {
+        'task': 'cgu_pep.tasks.sync',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    'healthcheck_cgu_pep_tasks': {
+        'task': 'cgu_pep.tasks.healthcheck',
         'schedule': crontab(hour='0', minute='0'),
     },
 }
