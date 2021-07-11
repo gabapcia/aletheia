@@ -8,9 +8,10 @@ from celery import shared_task
 from django.conf import settings
 from django.db import IntegrityError
 from aletheia.celery.task import RetryTask
+from aletheia.scraper.downloader import DefaultDownloader
+from aletheia.scraper.extractor import DefaultExtractor
+from aletheia.utils.file import Chunkenizer
 from .scraper.client import Client
-from .scraper.downloader import Downloader
-from .scraper.extractor import Extractor
 from .models import Release, InsertionTask
 from .engine.data_insertion import Engine
 
@@ -55,7 +56,6 @@ def insert(task_id: str) -> None:
 def chunkenize(release_id: str, filepath: str, filetype: FileType) -> None:
     release = Release.objects.get(pk=release_id)
 
-    CHUNKS = 100
     tasks_type = {
         FileType.PARTNER: InsertionTask.Type.PARTNERS,
         FileType.COMPANY: InsertionTask.Type.COMPANIES,
@@ -63,18 +63,10 @@ def chunkenize(release_id: str, filepath: str, filetype: FileType) -> None:
         FileType.SIMPLES_MEI: InsertionTask.Type.SIMPLES,
     }[filetype]
 
-    with open(filepath, 'r', encoding='iso-8859-1') as f:
-        lines = sum(1 for _ in f)
+    chunkenizer = Chunkenizer(Path(filepath))
 
-    chunk_size = lines // CHUNKS
     tasks = []
-    for i in range(CHUNKS):
-        start = i * chunk_size
-        end = (i + 1) * chunk_size - 1
-
-        if i == (CHUNKS - 1):
-            end = lines
-
+    for start, end in chunkenizer.chunckenize():
         task = InsertionTask(
             release=release,
             type=tasks_type,
@@ -92,10 +84,11 @@ def chunkenize(release_id: str, filepath: str, filetype: FileType) -> None:
 @shared_task(base=RetryTask)
 def download(release_id: str, uri: str, filetype: FileType) -> None:
     release = Release.objects.get(pk=release_id)
-    downloader = Downloader(uri)
+
+    downloader = DefaultDownloader(uri)
     zip_path = asyncio.run(downloader.download(Path(release.folder)))
 
-    extractor = Extractor(zip_path)
+    extractor = DefaultExtractor(zip_path)
     filepath = extractor.extract(zip_path.parent)[0]
 
     chunkenize.s(release_id=release_id, filepath=filepath.as_posix(), filetype=filetype).apply_async()

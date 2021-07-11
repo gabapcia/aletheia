@@ -1,4 +1,3 @@
-import gc
 import itertools
 import re
 from pathlib import Path
@@ -46,7 +45,6 @@ class Engine:
         def insert(data: dict[str, list[dict]]) -> None:
             Company.objects.bulk_upsert(conflict_target=['base_cnpj'], rows=data.values())
             data.clear()
-            gc.collect()
 
         fieldnames = [
             'base_cnpj',
@@ -97,7 +95,6 @@ class Engine:
         def insert(data: dict[str, list[dict]]) -> None:
             Simples.objects.bulk_upsert(conflict_target=['base_cnpj'], rows=data.values())
             data.clear()
-            gc.collect()
 
         fieldnames = [
             'base_cnpj',
@@ -181,7 +178,6 @@ class Engine:
         def insert(data: dict[str, list[dict]]) -> None:
             Establishment.objects.bulk_upsert(conflict_target=['cnpj'], rows=data.values())
             data.clear()
-            gc.collect()
 
         fieldnames = [
             'cnpj_base',
@@ -264,7 +260,7 @@ class Engine:
                     special_situation=line['special_situation'],
                     special_situation_date=(
                         datetime.strptime(line['date_special_situation'], '%Y%m%d').date()
-                        if line['date_special_situation'] and re.search(r'^0+$', line['date_special_situation'])
+                        if line['date_special_situation'] and not re.search(r'^0+$', line['date_special_situation'])
                         else None
                     ),
                 )
@@ -289,7 +285,6 @@ class Engine:
         def insert(data: dict[str, list[dict]]) -> None:
             Partner.objects.bulk_upsert(conflict_target=match_fields, rows=data.values())
             data.clear()
-            gc.collect()
 
         fieldnames = [
             'base_cnpj',
