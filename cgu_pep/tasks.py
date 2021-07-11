@@ -1,6 +1,5 @@
 import asyncio
 from datetime import datetime, timedelta
-from rfb_cnpj.tasks import chunkenize
 import shutil
 from contextlib import suppress
 from pathlib import Path
@@ -46,14 +45,14 @@ def insert(task_id: str) -> None:
 
 
 @shared_task(base=RetryTask)
-def chunckenize(release_id: str, filepath: str) -> None:
+def chunkenize(release_id: str, filepath: str) -> None:
     release: Release = Release.objects.get(pk=release_id)
     filepath = Path(filepath)
 
-    chunckenizer = Chunkenizer(filepath)
+    chunkenizer = Chunkenizer(filepath)
 
     tasks = []
-    for start, end in chunckenizer.chunckenize(n_chunks=100):
+    for start, end in chunkenizer.chunkenize(n_chunks=100):
         task = InsertionTask(
             release=release,
             filepath=filepath,
@@ -74,19 +73,19 @@ def download(release_id: str, uri: str) -> None:
     output_folder = Path(release.folder)
 
     downloader = DefaultDownloader(uri)
-    zip_path = downloader.download(output_folder)
+    zip_path = asyncio.run(downloader.download(output_folder))
 
     extractor = DefaultExtractor(zip_path)
     filepath = extractor.extract(output_folder)[0]
 
-    chunkenize.s(release_id=release.pk, filepath=filepath.as_posix())
+    chunkenize.s(release_id=release.pk, filepath=filepath.as_posix()).apply_async()
 
 
 @shared_task
 def sync() -> None:
     r = asyncio.run(Client().summary())
 
-    folder: Path = settings.DOWNLOAD_ROOT / f'GCUPEP-{r.generated_at.isoformat()}'
+    folder: Path = settings.DOWNLOAD_ROOT / f'CGUPEP-{r.generated_at.isoformat()}'
 
     try:
         release = Release.objects.create(date=r.generated_at, folder=folder.as_posix())

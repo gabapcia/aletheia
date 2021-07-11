@@ -66,7 +66,7 @@ def chunkenize(release_id: str, filepath: str, filetype: FileType) -> None:
     chunkenizer = Chunkenizer(Path(filepath))
 
     tasks = []
-    for start, end in chunkenizer.chunckenize():
+    for start, end in chunkenizer.chunkenize():
         task = InsertionTask(
             release=release,
             type=tasks_type,

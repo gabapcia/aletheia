@@ -15,6 +15,7 @@ class Engine:
         'role_description',
         'role_level',
         'federal_agency',
+        'entry_date',
     ]
 
     def __init__(self, task: InsertionTask) -> None:

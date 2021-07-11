@@ -79,6 +79,7 @@ class Person(PostgresModel):
                     'role_description',
                     'role_level',
                     'federal_agency',
+                    'entry_date',
                 ],
             ),
         ]
