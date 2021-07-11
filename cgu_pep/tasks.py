@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
+from rfb_cnpj.tasks import chunkenize
 import shutil
 from contextlib import suppress
 from pathlib import Path
@@ -76,7 +77,9 @@ def download(release_id: str, uri: str) -> None:
     zip_path = downloader.download(output_folder)
 
     extractor = DefaultExtractor(zip_path)
-    filepath = extractor.extract(output_folder)
+    filepath = extractor.extract(output_folder)[0]
+
+    chunkenize.s(release_id=release.pk, filepath=filepath.as_posix())
 
 
 @shared_task

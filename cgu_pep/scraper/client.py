@@ -29,7 +29,7 @@ class Client:
             if 'var arquivos = ' in text:
                 script = text
                 break
-        
+
         data = re.search(r'arquivos.push\((?P<data>.+)\)', script).group('data')
         data = json.loads(data)
 
