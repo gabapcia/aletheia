@@ -10,8 +10,12 @@ urlpatterns = [
 
     path('api/', include([
         path('v1/', include([
-            path('rfb-cnpj/', include('rfb_cnpj.urls'), name='RFB CNPJ'),
-            path('cgu-pep/', include('cgu_pep.urls'), name='CGU PEP'),
+            path('rfb/', include([
+                path('cnpj/', include('rfb_cnpj.urls'), name='RFB CNPJ'),
+            ])),
+            path('cgu/', include([
+                path('pep/', include('cgu_pep.urls'), name='CGU PEP'),
+            ])),
         ]))
     ])),
 ]
