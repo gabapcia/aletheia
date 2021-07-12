@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'rfb_cnpj',
     'cgu_pep',
+    'cgu_bolsafamilia',
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,15 @@ CELERY_BEAT_SCHEDULE = {
     },
     'healthcheck_cgu_pep_tasks': {
         'task': 'cgu_pep.tasks.healthcheck',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    # CGU Bolsa Família
+    'sync_cgu_bolsafamilias': {
+        'task': 'cgu_bolsafamilia.tasks.sync',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    'healthcheck_cgu_bolsafamilia_tasks': {
+        'task': 'cgu_bolsafamilia.tasks.healthcheck',
         'schedule': crontab(hour='0', minute='0'),
     },
 }

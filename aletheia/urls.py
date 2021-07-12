@@ -15,6 +15,7 @@ urlpatterns = [
             ])),
             path('cgu/', include([
                 path('pep/', include('cgu_pep.urls'), name='CGU PEP'),
+                path('bolsa-familia/', include('cgu_bolsafamilia.urls'), name='CGU BOLSA FAMILIA'),
             ])),
         ]))
     ])),
