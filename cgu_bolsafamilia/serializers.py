@@ -8,7 +8,6 @@ class PaymentSerializer(serializers.ModelSerializer):
         exclude = ['id', 'created_at', 'updated_at', 'release']
 
 
-
 class WithdrawSerializer(serializers.ModelSerializer):
     class Meta:
         model = Withdraw

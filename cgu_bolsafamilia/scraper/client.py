@@ -17,7 +17,7 @@ class Response:
 
 class Client:
     BASE_URL = 'http://www.portaldatransparencia.gov.br/'
-    
+
     PAYMENT_INITIAL_URI = BASE_URL + '/download-de-dados/bolsa-familia-pagamentos'
     PAYMENT_DOWNLOAD_URI = BASE_URL + '/download-de-dados/bolsa-familia-pagamentos/{year}{month}'
 
