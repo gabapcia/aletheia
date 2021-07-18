@@ -3,8 +3,8 @@ from .views import PaymentViewSet, WithdrawViewSet
 
 
 router = DefaultRouter()
-router.register('payments', PaymentViewSet, basename='bolsafamilia-payment')
-router.register('withdrawals', WithdrawViewSet, basename='bolsafamilia-withdraw')
+router.register('payments', PaymentViewSet, basename='cgu_bolsafamilia_payment')
+router.register('withdrawals', WithdrawViewSet, basename='cgu_bolsafamilia_withdraw')
 
 
 urlpatterns = router.urls

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rfb_cnpj',
     'cgu_pep',
     'cgu_bolsafamilia',
+    'cgu_servidores',
 ]
 
 MIDDLEWARE = [
@@ -123,6 +124,15 @@ CELERY_BEAT_SCHEDULE = {
     },
     'healthcheck_cgu_bolsafamilia_tasks': {
         'task': 'cgu_bolsafamilia.tasks.healthcheck',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    # CGU Servidores
+    'sync_cgu_servidores': {
+        'task': 'cgu_servidor.tasks.sync',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    'healthcheck_cgu_servidor_tasks': {
+        'task': 'cgu_servidor.tasks.healthcheck',
         'schedule': crontab(hour='0', minute='0'),
     },
 }

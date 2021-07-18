@@ -24,16 +24,6 @@ class FileType(IntEnum):
 
 
 @shared_task(base=RetryTask)
-def clean(release_id: str) -> None:
-    release = Release.objects.get(pk=release_id)
-
-    with suppress(FileNotFoundError):
-        shutil.rmtree(release.folder)
-
-    Release.objects.exclude(pk=release_id).delete()
-
-
-@shared_task(base=RetryTask)
 def insert(task_id: str) -> None:
     task: InsertionTask = InsertionTask.objects.get(pk=task_id)
     release: Release = task.release
@@ -49,7 +39,10 @@ def insert(task_id: str) -> None:
         release.finished = True
         release.save()
 
-        clean.s(release_id=release.pk).apply_async()
+        with suppress(FileNotFoundError):
+            shutil.rmtree(release.folder)
+
+        Release.objects.exclude(pk=release.pk).delete()
 
 
 @shared_task(base=RetryTask)

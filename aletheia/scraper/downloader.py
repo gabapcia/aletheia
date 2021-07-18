@@ -49,7 +49,7 @@ class DefaultDownloader:
 
     async def _get_file_name(self) -> str:
         headers = await self._get_headers()
-        re_filename = re.search(r'filename\=\"(?P<filename>[^\"]+)\"', headers['Content-Disposition'])
+        re_filename = re.search(r'filename\=\"(?P<filename>[^\"]+)\"', headers.get('Content-Disposition', ''))
         if re_filename:
             filename = re_filename.group('filename')
         else:

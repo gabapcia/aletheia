@@ -3,6 +3,6 @@ from .views import PersonViewSet
 
 
 router = DefaultRouter()
-router.register('', PersonViewSet, basename='people')
+router.register('', PersonViewSet, basename='cgu_pep_people')
 
 urlpatterns = router.urls
