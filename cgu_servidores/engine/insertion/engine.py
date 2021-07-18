@@ -1,7 +1,7 @@
 import csv
 import re
 from typing import Union
-from datetime import datetime, date, time
+from datetime import datetime, date
 from unidecode import unidecode
 from pathlib import Path
 from .register.employee import EmployeeInsertion
