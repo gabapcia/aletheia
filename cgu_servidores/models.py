@@ -117,6 +117,7 @@ class Employee(PostgresModel):
             models.Index(fields=['name']),
             models.Index(fields=['register']),
             models.Index(fields=['uf']),
+            models.Index(fields=['position_admission_date']),
         ]
         constraints = [
             models.UniqueConstraint(
@@ -193,6 +194,7 @@ class Retired(PostgresModel):
             models.Index(fields=['cpf']),
             models.Index(fields=['name']),
             models.Index(fields=['register']),
+            models.Index(fields=['retirement_date']),
         ]
         constraints = [
             models.UniqueConstraint(
@@ -271,6 +273,7 @@ class Pensioner(PostgresModel):
             models.Index(fields=['legal_representative_name']),
             models.Index(fields=['pi_cpf']),
             models.Index(fields=['pi_name']),
+            models.Index(fields=['pension_start_date']),
         ]
         constraints = [
             models.UniqueConstraint(

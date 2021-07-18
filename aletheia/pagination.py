@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import BasePagination
 from rest_framework.response import Response
+from rest_framework.request import Request
+from rest_framework.views import APIView
 from rest_framework import status
 
 
@@ -27,15 +29,18 @@ class PageLimitPagination(BasePagination):
 
         return limit if limit <= PageLimitPagination.MAX_LIMIT_VALUE else PageLimitPagination.MAX_LIMIT_VALUE
 
-    def paginate_queryset(self, queryset: QuerySet, request, view):
+    def paginate_queryset(self, queryset: QuerySet, request: Request, view: APIView):
         page = self._get_page_value(request)
         limit = self._get_limit_value(request)
 
         skip = page * limit
         max_value = skip + limit
 
-        queryset = queryset.order_by(PageLimitPagination.ORDERING_KEY)[skip:max_value]
-        return queryset
+        manual_ordering = getattr(view, 'manual_ordering', False)
+        if not manual_ordering:
+            queryset = queryset.order_by(PageLimitPagination.ORDERING_KEY)
+
+        return queryset[skip:max_value]
 
     def get_paginated_response(self, data):
         return Response(data)
