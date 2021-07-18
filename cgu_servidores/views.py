@@ -3,11 +3,13 @@ from rest_framework.mixins import ListModelMixin
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from .models import Employee, Retired, Pensioner
 from .serializers import EmployeeSerializer, RetiredSerializer, PensionerSerializer
+from .filters import EmployeeFilter, RetiredFilter, PensionerFilter
 
 
 class EmployeeViewSet(GenericViewSet, ListModelMixin):
     queryset = Employee.objects.all().order_by('portal_id', '-position_admission_date').distinct('portal_id')
     serializer_class = EmployeeSerializer
+    filterset_class = EmployeeFilter
     manual_ordering = True
 
     @extend_schema(
@@ -25,6 +27,7 @@ class EmployeeViewSet(GenericViewSet, ListModelMixin):
 class RetiredViewSet(GenericViewSet, ListModelMixin):
     queryset = Retired.objects.all().order_by('portal_id', '-retirement_date').distinct('portal_id')
     serializer_class = RetiredSerializer
+    filterset_class = RetiredFilter
     manual_ordering = True
 
     @extend_schema(
@@ -42,6 +45,7 @@ class RetiredViewSet(GenericViewSet, ListModelMixin):
 class PensionerViewSet(GenericViewSet, ListModelMixin):
     queryset = Pensioner.objects.all().order_by('portal_id', '-pension_start_date').distinct('portal_id')
     serializer_class = PensionerSerializer
+    filterset_class = PensionerFilter
     manual_ordering = True
 
     @extend_schema(
