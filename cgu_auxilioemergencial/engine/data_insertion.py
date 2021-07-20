@@ -66,7 +66,7 @@ class Engine:
                 id = ''.join((str(person[field]) for field in Engine.PERSON_MATCH_FIELDS))
                 if id in buffer:
                     late[id] = person
-                else: 
+                else:
                     buffer[id] = person
 
                 if len(buffer) >= batch_size:
