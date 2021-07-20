@@ -6,3 +6,4 @@ class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
         exclude = ['id', 'created_at', 'updated_at']
+        ref_name = 'CGUAEPerson'
