@@ -34,8 +34,6 @@ def insert(task_id: str) -> None:
         with suppress(FileNotFoundError):
             shutil.rmtree(release.folder)
 
-        Release.objects.exclude(pk=release.pk).delete()
-
 
 @shared_task(base=RetryTask)
 def chunkenize(release_id: str, filepath: str) -> None:
@@ -60,12 +58,12 @@ def chunkenize(release_id: str, filepath: str) -> None:
 
 
 @shared_task(base=RetryTask)
-def download(release_id: str, uri: str) -> None:
+def download(release_id: str) -> None:
     release: Release = Release.objects.get(pk=release_id)
 
     output_folder = Path(release.folder)
 
-    downloader = DefaultDownloader(uri)
+    downloader = DefaultDownloader(release.uri)
     zip_path = asyncio.run(downloader.download(output_folder))
 
     extractor = DefaultExtractor(zip_path)
@@ -76,18 +74,18 @@ def download(release_id: str, uri: str) -> None:
 
 @shared_task
 def sync() -> None:
-    r = asyncio.run(Client().summary())
+    responses = asyncio.run(Client().summary())
 
-    folder: Path = settings.DOWNLOAD_ROOT / f'CGUPEP-{r.generated_at.isoformat()}'
+    for r in responses:
+        folder: Path = settings.DOWNLOAD_ROOT / f'CGUAUXILIOEMERGENCIAL-{r.date.isoformat()}'
 
-    try:
-        release = Release.objects.create(date=r.generated_at, folder=folder.as_posix())
-    except IntegrityError:
-        return
+        try:
+            release: Release = Release.objects.create(date=r.date, uri=r.uri, folder=folder.as_posix())
+        except IntegrityError:
+            continue
 
-    folder.mkdir(exist_ok=True)
-
-    download.s(release_id=release.pk, uri=r.uri).apply_async()
+        folder.mkdir(exist_ok=True)
+        download.s(release_id=release.pk).apply_async()
 
 
 @shared_task

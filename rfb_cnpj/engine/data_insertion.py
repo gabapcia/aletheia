@@ -1,4 +1,5 @@
 import itertools
+import logging
 import re
 from pathlib import Path
 from csv import DictReader
@@ -130,7 +131,7 @@ class Engine:
                 try:
                     company = Company.objects.get(base_cnpj=line['base_cnpj'])
                 except Company.DoesNotExist:
-                    print(f"Missing base CNPJ: {line['base_cnpj']}")
+                    logging.warning(f"Missing base CNPJ: {line['base_cnpj']}")
                     continue
 
                 simples = dict(

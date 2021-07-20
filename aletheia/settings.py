@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'cgu_pep',
     'cgu_bolsafamilia',
     'cgu_servidores',
+    'cgu_auxilioemergencial',
 ]
 
 MIDDLEWARE = [
@@ -128,11 +129,20 @@ CELERY_BEAT_SCHEDULE = {
     },
     # CGU Servidores
     'sync_cgu_servidores': {
-        'task': 'cgu_servidor.tasks.sync',
+        'task': 'cgu_servidores.tasks.sync',
         'schedule': crontab(hour='0', minute='0'),
     },
     'healthcheck_cgu_servidor_tasks': {
-        'task': 'cgu_servidor.tasks.healthcheck',
+        'task': 'cgu_servidores.tasks.healthcheck',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    # CGU Auxílio Emergencial
+    'sync_cgu_auxilioemergencial': {
+        'task': 'cgu_auxilioemergencial.tasks.sync',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    'healthcheck_cgu_auxilioemergencial_tasks': {
+        'task': 'cgu_auxilioemergencial.tasks.healthcheck',
         'schedule': crontab(hour='0', minute='0'),
     },
 }

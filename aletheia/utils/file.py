@@ -9,7 +9,6 @@ class Chunkenizer:
     def chunkenize(self, n_chunks: int = 1000) -> Iterator[tuple[int, int]]:
         with self._filepath.open(mode='r', encoding='iso-8859-1') as f:
             lines = sum(1 for _ in f)
-            print(lines)
 
         chunk_size = lines // n_chunks
         for i in range(n_chunks):
