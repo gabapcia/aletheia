@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 from csv import DictReader
 from datetime import datetime
+from typing import Any
 from unidecode import unidecode
 from ..models import InsertionTask, Person
 
@@ -39,7 +40,8 @@ class Engine:
                 delimiter=';',
             )
 
-            buffer = []
+            buffer = {}
+            late = {}
             for line in reader:
                 responsible_name = unidecode(line['NOME RESPONSAVEL']).upper()
                 if responsible_name == 'NAO SE APLICA':
@@ -61,14 +63,23 @@ class Engine:
                     observation=line['OBSERVACAO'] if unidecode(line['OBSERVACAO']).upper() != 'NAO HA' else '',
                     value=int(re.sub(r'\D', '', line['VALOR BENEFICIO'])),
                 )
-                buffer.append(person)
+                id = ''.join((str(person[field]) for field in Engine.PERSON_MATCH_FIELDS))
+                if id in buffer:
+                    late[id] = person
+                else: 
+                    buffer[id] = person
 
                 if len(buffer) >= batch_size:
                     self._insert(buffer)
+                    if late:
+                        self._insert(late)
 
             if buffer:
                 self._insert(buffer)
 
-    def _insert(self, data: list[dict]) -> None:
-        Person.objects.bulk_upsert(conflict_target=Engine.PERSON_MATCH_FIELDS, rows=data)
+            if late:
+                self._insert(late)
+
+    def _insert(self, data: dict[str, dict[str, Any]]) -> None:
+        Person.objects.bulk_upsert(conflict_target=Engine.PERSON_MATCH_FIELDS, rows=data.values())
         data.clear()
