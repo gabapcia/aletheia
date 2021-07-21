@@ -43,7 +43,7 @@ class Client:
         for i in range(min(len(e_files), len(r_files), len(p_files))):
             if not (e_files[i].date == r_files[i].date == p_files[i].date):
                 missing_date = min(e_files[i].date, r_files[i].date, p_files[i].date)
-                logging.warn(f'Missing file for date {missing_date.isoformat()}...')
+                logging.warning(f'Missing file for date {missing_date.isoformat()}...')
                 return responses
 
             r = Response(

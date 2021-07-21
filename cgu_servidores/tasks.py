@@ -86,7 +86,7 @@ def download(release_id: str) -> None:
         with suppress(FileNotFoundError):
             shutil.rmtree(Path(release.folder))
 
-        logging.error(f'Invalid Release: [{release.date}] - {e}')
+        logging.warning(f'Invalid Release: [{release.date}] - {e}')
         return
 
     release.valid = True
