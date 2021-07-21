@@ -10,12 +10,15 @@ class Chunkenizer:
         with self._filepath.open(mode='r', encoding='iso-8859-1') as f:
             lines = sum(1 for _ in f)
 
-        chunk_size = lines // n_chunks
-        for i in range(n_chunks):
-            start = i * chunk_size
-            end = (i + 1) * chunk_size - 1
+        if lines > n_chunks:
+            chunk_size = lines // n_chunks
+            for i in range(n_chunks):
+                start = i * chunk_size
+                end = (i + 1) * chunk_size - 1
 
-            if i == (n_chunks - 1):
-                end = lines
+                if i == (n_chunks - 1):
+                    end = lines
 
-            yield start, end
+                yield start, end
+        else:
+            yield 0, lines

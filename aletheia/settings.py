@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'cgu_bolsafamilia',
     'cgu_servidores',
     'cgu_auxilioemergencial',
+    'cgu_viagens',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +144,15 @@ CELERY_BEAT_SCHEDULE = {
     },
     'healthcheck_cgu_auxilioemergencial_tasks': {
         'task': 'cgu_auxilioemergencial.tasks.healthcheck',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    # CGU Viagens
+    'sync_cgu_viagens': {
+        'task': 'cgu_viagens.tasks.sync',
+        'schedule': crontab(hour='0', minute='0'),
+    },
+    'healthcheck_cgu_viagens_tasks': {
+        'task': 'cgu_viagens.tasks.healthcheck',
         'schedule': crontab(hour='0', minute='0'),
     },
 }
