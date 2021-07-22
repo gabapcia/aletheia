@@ -19,6 +19,7 @@ urlpatterns = [
                 path('servidores/', include('cgu_servidores.urls'), name='CGU SERVIDORES'),
                 path('auxilio-emergencial/', include('cgu_auxilioemergencial.urls'), name='CGU AUXILIO EMERGENCIAL'),
                 path('viagens/', include('cgu_viagens.urls'), name='CGU VIAGENS'),
+                path('garantia-safra/', include('cgu_garantiasafra.urls'), name='CGU GARANTIA-SAFRA'),
             ])),
         ]))
     ])),

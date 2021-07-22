@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'cgu_servidores',
     'cgu_auxilioemergencial',
     'cgu_viagens',
+    'cgu_garantiasafra',
 ]
 
 MIDDLEWARE = [
