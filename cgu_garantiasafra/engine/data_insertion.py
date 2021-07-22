@@ -33,7 +33,8 @@ class Engine:
                 delimiter=';',
             )
 
-            buffer = []
+            buffer = {}
+            late = {}
             for line in reader:
                 warranty = dict(
                     reference_date=datetime.strptime(line['MÊS REFERÊNCIA'], '%Y%m').date(),
@@ -44,11 +45,21 @@ class Engine:
                     recipient_name=unidecode(line['NOME FAVORECIDO']).upper(),
                     value=int(re.sub(r'[^\d\-]', '', line['VALOR PARCELA'])),
                 )
-                buffer.append(warranty)
+                id = ''.join((str(warranty[field]) for field in match_fields))
+                if id in buffer:
+                    late[id] = warranty
+                else:
+                    buffer[id] = warranty
 
                 if len(buffer) >= batch_size:
-                    Warranty.objects.bulk_upsert(conflict_target=match_fields, rows=buffer)
+                    Warranty.objects.bulk_upsert(conflict_target=match_fields, rows=buffer.values())
                     buffer.clear()
+                    if late:
+                        Warranty.objects.bulk_upsert(conflict_target=match_fields, rows=late.values())
+                        late.clear()
 
             if buffer:
-                Warranty.objects.bulk_upsert(conflict_target=match_fields, rows=buffer)
+                Warranty.objects.bulk_upsert(conflict_target=match_fields, rows=buffer.values())
+
+            if late:
+                Warranty.objects.bulk_upsert(conflict_target=match_fields, rows=late.values())
