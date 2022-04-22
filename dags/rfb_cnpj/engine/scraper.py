@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass, asdict
 from datetime import date, datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 import httpx
 from unidecode import unidecode
 from bs4 import BeautifulSoup
@@ -113,7 +113,7 @@ class Client:
 
 
 @task(task_id='get_urls_from_rfb')
-def scraper() -> Dict[str, List[str]]:
+def scraper() -> Dict[str, Union[List[str], str]]:
     data = Client().summary()
 
     if (

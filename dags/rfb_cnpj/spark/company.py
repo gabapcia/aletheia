@@ -218,6 +218,7 @@ branch_df = (
 branch_df = branch_df\
     .withColumn('trading_name', f.upper(f.col('trading_name')))
 
+
 # endregion
 
 
