@@ -15,7 +15,7 @@ class FileLike:
 
     def read(self, size: int) -> None:
         return self.reader.read(size)
-    
+
     def name(self) -> str:
         name = self._name or self.reader.name
         name = '_'.join(unidecode(name).lower().split())

@@ -10,6 +10,8 @@ spark = SparkSession.builder\
     .getOrCreate()
 
 
+# region Parsing the Branch files
+
 # Schemas
 schema = StructType([
     StructField(name='base_cnpj', dataType=StringType(), nullable=False),
@@ -102,8 +104,6 @@ COUNTY = spark.read\
     .withColumn('value', f.upper('value'))
 
 
-############ Parsing the Branch files ############
-
 # Loading the dataset
 branch_df = (
     spark.read
@@ -149,7 +149,7 @@ other_cnaes = (
     )
 
     .join(cnae_data, f.col('cnae') == cnae_data.cnae_number, 'left')
-        .drop('cnae_number')
+    .drop('cnae_number')
 
     .groupBy(f.col('cnpj'))
 
@@ -169,8 +169,8 @@ branch_df = (
     .join(other_cnaes, 'cnpj', 'left')
 
     .join(cnae_data, branch_df.cnae == cnae_data.cnae_number, 'left')
-        .withColumnRenamed('description', 'cnae_description')
-        .drop('cnae_number')
+    .withColumnRenamed('description', 'cnae_description')
+    .drop('cnae_number')
 )
 
 
@@ -193,24 +193,24 @@ branch_df = (
     branch_df
 
     .join(TYPE, branch_df.type_code == TYPE.key, 'left')
-        .withColumnRenamed('value', 'type')
-        .drop('key')
+    .withColumnRenamed('value', 'type')
+    .drop('key')
 
     .join(SITUATION, branch_df.situation_code == SITUATION.key, 'left')
-        .withColumnRenamed('value', 'situation')
-        .drop('key')
+    .withColumnRenamed('value', 'situation')
+    .drop('key')
 
     .join(REASON_SITUATION, branch_df.reason_situation_code == REASON_SITUATION.key, 'left')
-        .withColumnRenamed('value', 'reason_situation')
-        .drop('key')
+    .withColumnRenamed('value', 'reason_situation')
+    .drop('key')
 
     .join(COUNTRY, branch_df.country_code == COUNTRY.key, 'left')
-        .withColumnRenamed('value', 'country')
-        .drop('key')
+    .withColumnRenamed('value', 'country')
+    .drop('key')
 
     .join(COUNTY, branch_df.county_code == COUNTY.key, 'left')
-        .withColumnRenamed('value', 'county')
-        .drop('key')
+    .withColumnRenamed('value', 'county')
+    .drop('key')
 )
 
 
@@ -218,8 +218,10 @@ branch_df = (
 branch_df = branch_df\
     .withColumn('trading_name', f.upper(f.col('trading_name')))
 
+# endregion
 
-############ Parsing the Company files ############
+
+# region Parsing the Company files
 
 # Schemas
 schema = StructType([
@@ -306,27 +308,33 @@ simples_data = (
 
 
 # Parsing SIMPLES dates
-simples_data = simples_data\
+simples_data = (
+    simples_data
+
     .withColumn(
         'date_opted_for_simples',
-        f.when(f.col('date_opted_for_simples') == '00000000', None)\
-            .otherwise(f.to_date('date_opted_for_simples', 'yyyyMMdd'))
-    )\
+        f.when(f.col('date_opted_for_simples') == '00000000', None)
+        .otherwise(f.to_date('date_opted_for_simples', 'yyyyMMdd'))
+    )
+
     .withColumn(
         'simples_exclusion_date',
-        f.when(f.col('simples_exclusion_date') == '00000000', None)\
-            .otherwise(f.to_date('simples_exclusion_date', 'yyyyMMdd'))
-    )\
+        f.when(f.col('simples_exclusion_date') == '00000000', None)
+        .otherwise(f.to_date('simples_exclusion_date', 'yyyyMMdd'))
+    )
+
     .withColumn(
         'date_opted_for_mei',
-        f.when(f.col('date_opted_for_mei') == '00000000', None)\
-            .otherwise(f.to_date('date_opted_for_mei', 'yyyyMMdd'))
-    )\
+        f.when(f.col('date_opted_for_mei') == '00000000', None)
+        .otherwise(f.to_date('date_opted_for_mei', 'yyyyMMdd'))
+    )
+
     .withColumn(
         'mei_exclusion_date',
-        f.when(f.col('mei_exclusion_date') == '00000000', None)\
-            .otherwise(f.to_date('mei_exclusion_date', 'yyyyMMdd'))
-    )\
+        f.when(f.col('mei_exclusion_date') == '00000000', None)
+        .otherwise(f.to_date('mei_exclusion_date', 'yyyyMMdd'))
+    )
+)
 
 
 # Merging datasets
@@ -338,17 +346,18 @@ company_df = (
     company_df
 
     .join(SIZE, company_df.size_code == SIZE.key, 'left')
-        .withColumnRenamed('value', 'size')
-        .drop('key')
+    .withColumnRenamed('value', 'size')
+    .drop('key')
 
     .join(LEGAL_NATURE, company_df.legal_nature_code == LEGAL_NATURE.key, 'left')
-        .withColumnRenamed('value', 'legal_nature')
-        .drop('key')
+    .withColumnRenamed('value', 'legal_nature')
+    .drop('key')
 
     .join(QUALIFICATION, company_df.responsible_qualification_code == QUALIFICATION.key, 'left')
-        .withColumnRenamed('value', 'responsible_qualification')
-        .drop('key')
+    .withColumnRenamed('value', 'responsible_qualification')
+    .drop('key')
 )
+
 
 # Parsing monetary values
 def brl_string_to_monetary(col: Column) -> Column:
@@ -357,6 +366,7 @@ def brl_string_to_monetary(col: Column) -> Column:
     col = col.cast(FloatType()) * 100
     col = f.round(col, 0).cast(IntegerType())
     return col
+
 
 company_df = company_df\
     .withColumn('share_capital', brl_string_to_monetary(f.col('share_capital')))
@@ -367,12 +377,12 @@ company_df = company_df\
     .withColumn('corporate_name', f.upper(f.col('corporate_name')))
 
 
-############ Joining datasets ############
-
-full = branch_df.join(company_df, 'base_cnpj', 'left')
+# endregion
 
 
-full.fillna('').write.format('org.apache.spark.sql.cassandra')\
+data = branch_df.join(company_df, 'base_cnpj', 'left')
+
+data.fillna('').write.format('org.apache.spark.sql.cassandra')\
     .mode('append')\
     .options(keyspace='rfb_cnpj', table='company')\
     .save()

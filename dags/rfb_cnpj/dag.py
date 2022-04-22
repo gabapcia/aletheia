@@ -35,9 +35,7 @@ from rfb_cnpj.engine.scraper import NUMBER_OF_URIS, FILE_TYPES, SINGLE_FILES
 def rfb_cnpj():
     links = scraper()
 
-
     check_if_already_exists = DummyOperator(task_id='check_if_already_exists')
-
 
     with TaskGroup(group_id='download') as download:
         for type_ in FILE_TYPES:
@@ -76,7 +74,6 @@ def rfb_cnpj():
             )
 
             filedownload >> fileextract
-
 
     with TaskGroup(group_id='cassandra') as cassandra:
         create_keyspace = CreateKeyspaceOperator(
@@ -181,7 +178,6 @@ def rfb_cnpj():
 
         create_keyspace >> [create_company_table, create_partner_table]
 
-
     with TaskGroup(group_id='processing') as processing:
         for type_ in ['company', 'partner']:
             SparkSubmitWithCredentialsOperator(
@@ -217,13 +213,11 @@ def rfb_cnpj():
                 ],
             )
 
-
     delete_extracted_files = DeleteFolderOperator(
         task_id='delete_extracted_files',
         folder='extracted/',
         minio_conn_id='minio_default',
     )
-
 
     links >> check_if_already_exists >> download >> cassandra >> processing >> delete_extracted_files
 

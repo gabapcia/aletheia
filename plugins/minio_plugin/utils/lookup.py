@@ -10,8 +10,8 @@ class XComArgLookup:
 
     def get(self, context) -> Any:
         data = self.raw.resolve(context)
-        for l in self.lookup:
-            data = data[l]
+        for key in self.lookup:
+            data = data[key]
 
         return data
 

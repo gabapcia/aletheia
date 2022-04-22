@@ -12,7 +12,7 @@ class FileReader(ABC):
     @abstractmethod
     def read(self, size: int) -> None:
         raise NotImplementedError
-    
+
     @abstractmethod
     def name(self) -> str:
         raise NotImplementedError
@@ -24,7 +24,6 @@ class FileReader(ABC):
     @abstractmethod
     def content_type(self) -> str:
         raise NotImplementedError
-
 
 
 class MinioHook(BaseHook):

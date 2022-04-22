@@ -129,24 +129,24 @@ partner_df = (
     partner_df
 
     .join(TYPE, partner_df.type_code == TYPE.key, 'left')
-        .withColumnRenamed('value', 'type')
-        .drop('key')
+    .withColumnRenamed('value', 'type')
+    .drop('key')
 
     .join(AGE_GROUP, partner_df.age_group_code == AGE_GROUP.key, 'left')
-        .withColumnRenamed('value', 'age_group')
-        .drop('key')
+    .withColumnRenamed('value', 'age_group')
+    .drop('key')
 
     .join(QUALIFICATION, partner_df.qualification_code == QUALIFICATION.key, 'left')
-        .withColumnRenamed('value', 'qualification')
-        .drop('key')
+    .withColumnRenamed('value', 'qualification')
+    .drop('key')
 
     .join(QUALIFICATION, partner_df.legal_representative_qualification_code == QUALIFICATION.key, 'left')
-        .withColumnRenamed('value', 'legal_representative_qualification')
-        .drop('key')
+    .withColumnRenamed('value', 'legal_representative_qualification')
+    .drop('key')
 
     .join(COUNTRY, partner_df.country_code == COUNTRY.key, 'left')
-        .withColumnRenamed('value', 'country')
-        .drop('key')
+    .withColumnRenamed('value', 'country')
+    .drop('key')
 )
 
 

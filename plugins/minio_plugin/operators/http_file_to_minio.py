@@ -24,7 +24,7 @@ class FileDownloadOperator(BaseOperator):
     def execute(self, context: Context) -> str:
         if isinstance(self.uri, XComArgLookup):
             self.uri = self.uri.get(context)
-        
+
         if isinstance(self.folder, FolderLookup):
             self.folder = self.folder.get(context)
 
