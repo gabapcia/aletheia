@@ -1,0 +1,6 @@
+httpx[http2]
+beautifulsoup4
+unidecode
+minio
+python-magic
+pyspark
