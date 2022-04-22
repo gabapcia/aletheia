@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+  # Airflow
+  airflow:
+    build: .
+    environment:
+      AIRFLOW_HOME: /opt/airflow
+    restart: unless-stopped
+    volumes:
+      - .:/opt/airflow
+
+  # Spark
+  spark:
+    image: bitnami/spark:3
+    environment:
+      SPARK_MODE: master
+    restart: unless-stopped
+    ports:
+      - 7077:7077
+  
+  spark-worker:
+    image: bitnami/spark:3
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark:7077
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+    depends_on:
+      - spark
+
+  # Databases
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    expose:
+      - 5432
+
+  # Data Lake
+  minio:
+    image: minio/minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./.docker/minio:/data
+    ports:
+      - 9001:9001
+
+  cassandra:
+    image: cassandra:4
+    restart: unless-stopped
+    environment:
+      CASSANDRA_CLUSTER_NAME: Aletheia
+    volumes:
+      - ./.docker/cassandra:/var/lib/cassandra
+
+volumes:
+  pg_data:
