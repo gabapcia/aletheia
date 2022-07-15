@@ -1,6 +1,10 @@
 [flake8]
 max-line-length = 120
+
 exclude =
     .git/
     env/
     __pycache__/
+
+per-file-ignores =
+    dags/rfb_cnpj/operators/processing.py: E501
