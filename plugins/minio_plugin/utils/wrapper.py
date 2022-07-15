@@ -5,12 +5,13 @@ from unidecode import unidecode
 
 class FileLike:
     def __init__(self, reader: IO[bytes], name: str = '') -> None:
-        self._name = name
-
         previous_position = reader.tell()
+
         self._content_type = magic.from_buffer(reader.read(1024), mime=True)
 
         reader.seek(previous_position)
+
+        self._name = name
         self.reader = reader
 
     def read(self, size: int) -> None:
@@ -18,7 +19,7 @@ class FileLike:
 
     def name(self) -> str:
         name = self._name or self.reader.name
-        name = '_'.join(unidecode(name).lower().split())
+        name = unidecode(name).strip()
         return name
 
     def size(self) -> int:

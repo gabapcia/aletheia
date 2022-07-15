@@ -1,7 +1,26 @@
+from abc import ABC, abstractmethod
 import httpx
 
 
-class HTTPFile:
+class FileReader(ABC):
+    @abstractmethod
+    def read(self, size: int) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def name(self) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def size(self) -> int:
+        raise NotImplementedError
+
+    @abstractmethod
+    def content_type(self) -> str:
+        raise NotImplementedError
+
+
+class HTTPFile(FileReader):
     def __init__(self, uri: str, name: str = '', timeout: int = 5) -> None:
         self._uri = uri
         self._name = name
@@ -12,7 +31,7 @@ class HTTPFile:
         self._response = self._stream.__enter__()
         self._response.raise_for_status()
 
-        self._data = self._response.iter_bytes()
+        self._data = None
         return self
 
     def __exit__(self, *args, **kwargs) -> None:
@@ -20,6 +39,9 @@ class HTTPFile:
         self._stream.__exit__(*args, **kwargs)
 
     def read(self, size: int) -> bytes:
+        if not self._data:
+            self._data = self._response.iter_bytes(chunk_size=size)
+
         buffer = bytes()
 
         for data in self._data:
@@ -34,8 +56,8 @@ class HTTPFile:
         return ct
 
     def size(self) -> int:
-        cl = int(self._response.headers.get('Content-Length', -1))
-        return cl
+        co = int(self._response.headers.get('Content-Length', -1))
+        return co
 
     def name(self) -> str:
         name = self._name or self._uri.split('/')[-1].split('?')[0]

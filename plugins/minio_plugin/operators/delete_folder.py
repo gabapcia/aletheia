@@ -8,20 +8,21 @@ from minio_plugin.utils.lookup import FolderLookup
 class DeleteFolderOperator(BaseOperator):
     def __init__(
         self,
-        folder: Union[FolderLookup, str] = '',
+        folder: Union[FolderLookup, str],
+        bucket: str,
         minio_conn_id: str = 'minio_default',
         *args,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
 
         self.folder = folder
+        self.bucket = bucket
         self.minio_conn_id = minio_conn_id
 
     def execute(self, context: Context) -> None:
         if isinstance(self.folder, FolderLookup):
-            self.folder = self.folder.get(context)
+            self.folder = self.folder.resolve(context)
 
         minio = MinioHook(conn_id=self.minio_conn_id)
-
-        minio.delete_folder(folder=self.folder)
+        minio.delete_folder(bucket=self.bucket, folder=self.folder)
