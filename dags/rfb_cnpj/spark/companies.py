@@ -10,54 +10,66 @@ spark = SparkSession.builder\
     .getOrCreate()
 
 
+# Configs
+COMPANY_BUCKET_PATH = str(spark.conf.get('spark.aletheia.buckets.company'))
+BRANCH_BUCKET_PATH = str(spark.conf.get('spark.aletheia.buckets.branch'))
+COUNTRY_BUCKET_PATH = str(spark.conf.get('spark.aletheia.buckets.country'))
+COUNTY_BUCKET_PATH = str(spark.conf.get('spark.aletheia.buckets.county'))
+REGISTER_SITUATION_BUCKET_PATH = str(spark.conf.get('spark.aletheia.buckets.register_situation'))
+CNAE_INFO_BUCKET_PATH = str(spark.conf.get('spark.aletheia.buckets.cnae_info'))
+LEGAL_NATURE_BUCKET_PATH = str(spark.conf.get('spark.aletheia.buckets.legal_nature'))
+PARTNER_QUALIFICATION_BUCKET_PATH = str(spark.conf.get('spark.aletheia.buckets.partner_qualification'))
+SIMPLES_INFO_BUCKET_PATH = str(spark.conf.get('spark.aletheia.buckets.simples'))
+
+
 # region Parsing the Branch files
 
 # Schemas
 schema = StructType([
-    StructField(name='base_cnpj', dataType=StringType(), nullable=False),
-    StructField(name='order_cnpj', dataType=StringType(), nullable=False),
-    StructField(name='vd_cnpj', dataType=StringType(), nullable=False),
-    StructField(name='type_code', dataType=IntegerType(), nullable=False),
-    StructField(name='trading_name', dataType=StringType(), nullable=False),
-    StructField(name='situation_code', dataType=IntegerType(), nullable=False),
-    StructField(name='date_situation', dataType=DateType(), nullable=False),
-    StructField(name='reason_situation_code', dataType=StringType(), nullable=False),
-    StructField(name='foreign_city_name', dataType=StringType(), nullable=False),
-    StructField(name='country_code', dataType=StringType(), nullable=False),
-    StructField(name='start_date', dataType=DateType(), nullable=False),
-    StructField(name='cnae', dataType=StringType(), nullable=False),
-    StructField(name='other_cnaes', dataType=StringType(), nullable=False),
-    StructField(name='address_type', dataType=StringType(), nullable=False),
-    StructField(name='address', dataType=StringType(), nullable=False),
-    StructField(name='number', dataType=StringType(), nullable=False),
-    StructField(name='complement', dataType=StringType(), nullable=False),
-    StructField(name='district', dataType=StringType(), nullable=False),
-    StructField(name='zip_code', dataType=StringType(), nullable=False),
-    StructField(name='federative_unit', dataType=StringType(), nullable=False),
-    StructField(name='county_code', dataType=StringType(), nullable=False),
-    StructField(name='ddd_1', dataType=StringType(), nullable=False),
-    StructField(name='phone_1', dataType=StringType(), nullable=False),
-    StructField(name='ddd_2', dataType=StringType(), nullable=False),
-    StructField(name='phone_2', dataType=StringType(), nullable=False),
-    StructField(name='ddd_fax', dataType=StringType(), nullable=False),
-    StructField(name='fax', dataType=StringType(), nullable=False),
-    StructField(name='email', dataType=StringType(), nullable=False),
-    StructField(name='special_situation', dataType=StringType(), nullable=False),
-    StructField(name='date_special_situation', dataType=DateType(), nullable=False),
+    StructField('base_cnpj', StringType(), nullable=False),
+    StructField('order_cnpj', StringType(), nullable=False),
+    StructField('vd_cnpj', StringType(), nullable=False),
+    StructField('type_code', IntegerType(), nullable=False),
+    StructField('trading_name', StringType(), nullable=False),
+    StructField('situation_code', IntegerType(), nullable=False),
+    StructField('date_situation', DateType(), nullable=False),
+    StructField('reason_situation_code', IntegerType(), nullable=False),
+    StructField('foreign_city_name', StringType(), nullable=False),
+    StructField('country_code', IntegerType(), nullable=False),
+    StructField('start_date', DateType(), nullable=False),
+    StructField('cnae', StringType(), nullable=False),
+    StructField('other_cnaes', StringType(), nullable=False),
+    StructField('address_type', StringType(), nullable=False),
+    StructField('address', StringType(), nullable=False),
+    StructField('number', StringType(), nullable=False),
+    StructField('complement', StringType(), nullable=False),
+    StructField('district', StringType(), nullable=False),
+    StructField('zip_code', StringType(), nullable=False),
+    StructField('federative_unit', StringType(), nullable=False),
+    StructField('county_code', IntegerType(), nullable=False),
+    StructField('ddd_1', StringType(), nullable=False),
+    StructField('phone_1', StringType(), nullable=False),
+    StructField('ddd_2', StringType(), nullable=False),
+    StructField('phone_2', StringType(), nullable=False),
+    StructField('ddd_fax', StringType(), nullable=False),
+    StructField('fax', StringType(), nullable=False),
+    StructField('email', StringType(), nullable=False),
+    StructField('special_situation', StringType(), nullable=False),
+    StructField('date_special_situation', DateType(), nullable=False),
 ])
 
 cnae_schema = StructType([
-    StructField(name='cnae_number', dataType=StringType(), nullable=False),
-    StructField(name='description', dataType=StringType(), nullable=False),
+    StructField('cnae_number', StringType(), nullable=False),
+    StructField('description', StringType(), nullable=False),
 ])
 
 code_schema = StructType(fields=[
-    StructField(name='key', dataType=IntegerType(), nullable=False),
-    StructField(name='value', dataType=StringType(), nullable=False),
+    StructField('key', IntegerType(), nullable=False),
+    StructField('value', StringType(), nullable=False),
 ])
 
 # Enums
-TYPE = spark.createDataFrame(
+company_type_df = spark.createDataFrame(
     data={
         1: 'MATRIZ',
         2: 'FILIAL',
@@ -65,7 +77,7 @@ TYPE = spark.createDataFrame(
     schema=code_schema,
 )
 
-SITUATION = spark.createDataFrame(
+situation_df = spark.createDataFrame(
     data={
         1: 'NULA',
         2: 'ATIVA',
@@ -76,31 +88,31 @@ SITUATION = spark.createDataFrame(
     schema=code_schema,
 )
 
-REASON_SITUATION = spark.read\
+reason_situation_df = spark.read\
     .schema(code_schema)\
     .option('header', 'false')\
     .option('delimiter', ';')\
     .option('quote', '"')\
     .option('encoding', 'ISO-8859-1')\
-    .csv('s3a://rfbcnpj/extracted/single/register_situation_map')\
+    .csv(f's3a://{REGISTER_SITUATION_BUCKET_PATH}')\
     .withColumn('value', f.upper('value'))
 
-COUNTRY = spark.read\
+country_df = spark.read\
     .schema(code_schema)\
     .option('header', 'false')\
     .option('delimiter', ';')\
     .option('quote', '"')\
     .option('encoding', 'ISO-8859-1')\
-    .csv('s3a://rfbcnpj/extracted/single/country_map')\
+    .csv(f's3a://{COUNTRY_BUCKET_PATH}')\
     .withColumn('value', f.upper('value'))
 
-COUNTY = spark.read\
+county_df = spark.read\
     .schema(code_schema)\
     .option('header', 'false')\
     .option('delimiter', ';')\
     .option('quote', '"')\
     .option('encoding', 'ISO-8859-1')\
-    .csv('s3a://rfbcnpj/extracted/single/county_map')\
+    .csv(f's3a://{COUNTY_BUCKET_PATH}')\
     .withColumn('value', f.upper('value'))
 
 
@@ -118,7 +130,7 @@ branch_df = (
         escape='',
         unescapedQuoteHandling='STOP_AT_CLOSING_QUOTE',
     )
-    .csv('s3a://rfbcnpj/extracted/branch/*')
+    .csv(f's3a://{BRANCH_BUCKET_PATH}')
 )
 
 cnae_data = (
@@ -130,7 +142,7 @@ cnae_data = (
         quote='"',
         encoding='ISO-8859-1',
     )
-    .csv('s3a://rfbcnpj/extracted/single/cnae_info_map')
+    .csv(f's3a://{CNAE_INFO_BUCKET_PATH}')
 )
 
 # Join CNPJ
@@ -192,23 +204,23 @@ branch_df = branch_df\
 branch_df = (
     branch_df
 
-    .join(TYPE, branch_df.type_code == TYPE.key, 'left')
+    .join(company_type_df, branch_df.type_code == company_type_df.key, 'left')
     .withColumnRenamed('value', 'type')
     .drop('key')
 
-    .join(SITUATION, branch_df.situation_code == SITUATION.key, 'left')
+    .join(situation_df, branch_df.situation_code == situation_df.key, 'left')
     .withColumnRenamed('value', 'situation')
     .drop('key')
 
-    .join(REASON_SITUATION, branch_df.reason_situation_code == REASON_SITUATION.key, 'left')
+    .join(reason_situation_df, branch_df.reason_situation_code == reason_situation_df.key, 'left')
     .withColumnRenamed('value', 'reason_situation')
     .drop('key')
 
-    .join(COUNTRY, branch_df.country_code == COUNTRY.key, 'left')
+    .join(country_df, branch_df.country_code == country_df.key, 'left')
     .withColumnRenamed('value', 'country')
     .drop('key')
 
-    .join(COUNTY, branch_df.county_code == COUNTY.key, 'left')
+    .join(county_df, branch_df.county_code == county_df.key, 'left')
     .withColumnRenamed('value', 'county')
     .drop('key')
 )
@@ -226,33 +238,33 @@ branch_df = branch_df\
 
 # Schemas
 schema = StructType([
-    StructField(name='base_cnpj', dataType=StringType(), nullable=False),
-    StructField(name='corporate_name', dataType=StringType(), nullable=False),
-    StructField(name='legal_nature_code', dataType=StringType(), nullable=False),
-    StructField(name='responsible_qualification_code', dataType=StringType(), nullable=False),
-    StructField(name='share_capital', dataType=StringType(), nullable=False),
-    StructField(name='size_code', dataType=IntegerType(), nullable=False),
-    StructField(name='responsible_federative_entity', dataType=StringType(), nullable=False),
+    StructField('base_cnpj', StringType(), nullable=False),
+    StructField('corporate_name', StringType(), nullable=False),
+    StructField('legal_nature_code', IntegerType(), nullable=False),
+    StructField('responsible_qualification_code', IntegerType(), nullable=False),
+    StructField('share_capital', StringType(), nullable=False),
+    StructField('size_code', IntegerType(), nullable=False),
+    StructField('responsible_federative_entity', StringType(), nullable=False),
 ])
 
 simples_schema = StructType([
-    StructField(name='base_cnpj', dataType=StringType(), nullable=False),
-    StructField(name='opted_for_simples', dataType=StringType(), nullable=False),
-    StructField(name='date_opted_for_simples', dataType=StringType(), nullable=False),
-    StructField(name='simples_exclusion_date', dataType=StringType(), nullable=False),
-    StructField(name='opted_for_mei', dataType=StringType(), nullable=False),
-    StructField(name='date_opted_for_mei', dataType=StringType(), nullable=False),
-    StructField(name='mei_exclusion_date', dataType=StringType(), nullable=False),
+    StructField('base_cnpj', StringType(), nullable=False),
+    StructField('opted_for_simples', StringType(), nullable=False),
+    StructField('date_opted_for_simples', StringType(), nullable=False),
+    StructField('simples_exclusion_date', StringType(), nullable=False),
+    StructField('opted_for_mei', StringType(), nullable=False),
+    StructField('date_opted_for_mei', StringType(), nullable=False),
+    StructField('mei_exclusion_date', StringType(), nullable=False),
 ])
 
 code_schema = StructType([
-    StructField(name='key', dataType=IntegerType(), nullable=False),
-    StructField(name='value', dataType=StringType(), nullable=False),
+    StructField('key', IntegerType(), nullable=False),
+    StructField('value', StringType(), nullable=False),
 ])
 
 
 # Enums
-SIZE = spark.createDataFrame(
+size_df = spark.createDataFrame(
     data={
         0: 'NÃO INFORMADO',
         1: 'MICRO EMPRESA',
@@ -262,22 +274,22 @@ SIZE = spark.createDataFrame(
     schema=code_schema,
 )
 
-LEGAL_NATURE = spark.read\
+legal_nature_df = spark.read\
     .schema(code_schema)\
     .option('header', 'false')\
     .option('delimiter', ';')\
     .option('quote', '"')\
     .option('encoding', 'ISO-8859-1')\
-    .csv('s3a://rfbcnpj/extracted/single/legal_nature_info')\
+    .csv(f's3a://{LEGAL_NATURE_BUCKET_PATH}')\
     .withColumn('value', f.upper('value'))
 
-QUALIFICATION = spark.read\
+qualification_df = spark.read\
     .schema(code_schema)\
     .option('header', 'false')\
     .option('delimiter', ';')\
     .option('quote', '"')\
     .option('encoding', 'ISO-8859-1')\
-    .csv('s3a://rfbcnpj/extracted/single/partner_qualification_map')\
+    .csv(f's3a://{PARTNER_QUALIFICATION_BUCKET_PATH}')\
     .withColumn('value', f.upper('value'))
 
 
@@ -291,7 +303,7 @@ company_df = (
         quote='"',
         encoding='ISO-8859-1',
     )
-    .csv('s3a://rfbcnpj/extracted/company/*')
+    .csv(f's3a://{COMPANY_BUCKET_PATH}')
 )
 
 simples_data = (
@@ -304,7 +316,7 @@ simples_data = (
         encoding='ISO-8859-1',
         dateFormat='yyyyMMdd',
     )
-    .csv('s3a://rfbcnpj/extracted/single/simples_info')
+    .csv(f's3a://{SIMPLES_INFO_BUCKET_PATH}')
 )
 
 
@@ -346,15 +358,15 @@ company_df = company_df.join(simples_data, 'base_cnpj', 'left')
 company_df = (
     company_df
 
-    .join(SIZE, company_df.size_code == SIZE.key, 'left')
+    .join(size_df, company_df.size_code == size_df.key, 'left')
     .withColumnRenamed('value', 'size')
     .drop('key')
 
-    .join(LEGAL_NATURE, company_df.legal_nature_code == LEGAL_NATURE.key, 'left')
+    .join(legal_nature_df, company_df.legal_nature_code == legal_nature_df.key, 'left')
     .withColumnRenamed('value', 'legal_nature')
     .drop('key')
 
-    .join(QUALIFICATION, company_df.responsible_qualification_code == QUALIFICATION.key, 'left')
+    .join(qualification_df, company_df.responsible_qualification_code == qualification_df.key, 'left')
     .withColumnRenamed('value', 'responsible_qualification')
     .drop('key')
 )
@@ -383,7 +395,13 @@ company_df = company_df\
 
 data = branch_df.join(company_df, 'base_cnpj', 'left')
 
-data.fillna('').write.format('org.apache.spark.sql.cassandra')\
+
+# Saving to ElasticSearch
+index_name = str(spark.conf.get('spark.es.resource'))
+
+data.write.format('org.elasticsearch.spark.sql')\
     .mode('append')\
-    .options(keyspace='rfb_cnpj', table='company')\
+    .option('es.resource', index_name)\
+    .option('es.write.operation', 'index')\
+    .option('es.mapping.id', 'cnpj')\
     .save()
