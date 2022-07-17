@@ -6,7 +6,7 @@ from include.xcom_handler import lookup_xcom
 from rfb_cnpj.operators.scraper import MAPPER_FILES, GENERATED_AT_KEY, PARTNER_KEY, BRANCH_KEY, COMPANY_KEY
 
 
-MINIO_BUCKET = 'rfbcnpj'
+MINIO_BUCKET = 'rfb-cnpj'
 
 
 def download(links: Dict[str, Any]) -> Tuple[TaskGroup, Dict[str, Any]]:
