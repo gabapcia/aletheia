@@ -11,7 +11,6 @@ from cgu_pep.operators.database import elasticsearch
 from cgu_pep.operators.processing import spark
 
 
-
 @dag(
     description='Pessoas Expostas Politicamente (PEP) from Controladoria-Geral da União',
     catchup=False,
