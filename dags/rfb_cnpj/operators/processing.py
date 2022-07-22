@@ -70,6 +70,7 @@ def spark(indices: Dict[str, Any], extracted_files: Dict[str, Any]) -> TaskGroup
                 verbose=False,
                 conn_id='spark_default',
                 executor_memory='5G',
+                total_executor_cores=8,
                 conf={
                     'spark.aletheia.buckets.company': SparkConfFromXCom(companies, lookup=[]),
                     'spark.aletheia.buckets.branch': SparkConfFromXCom(branches, lookup=[]),

@@ -1,5 +1,10 @@
 from abc import ABC, abstractmethod
 import httpx
+from httpx import codes
+
+
+class FileNotFound(Exception):
+    pass
 
 
 class FileReader(ABC):
@@ -29,6 +34,10 @@ class HTTPFile(FileReader):
     def __enter__(self) -> 'HTTPFile':
         self._stream = httpx.stream('GET', self._uri, timeout=self._timeout)
         self._response = self._stream.__enter__()
+
+        if self._response.status_code == codes.NOT_FOUND:
+            raise FileNotFound
+
         self._response.raise_for_status()
 
         self._data = None

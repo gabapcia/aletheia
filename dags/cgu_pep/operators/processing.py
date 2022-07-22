@@ -6,7 +6,6 @@ from minio_plugin.operators.extract_file import ExtractFileOperator
 from spark_plugin.operators.spark import SparkSubmitWithCredentialsOperator
 from spark_plugin.utils.lookup import ConfFromConnection as SparkConfFromConnection, ConfFromXCom as SparkConfFromXCom
 from cgu_pep.operators.storage import MINIO_BUCKET
-from cgu_pep.operators.database import PEOPLE_INDEX_KEY
 
 
 @task
@@ -24,19 +23,19 @@ def get_bucket_path_wildcard(paths: List[str]) -> str:
     return f'{MINIO_BUCKET}/{path}'
 
 
-def spark(indices: Dict[str, Any], extracted_file: ExtractFileOperator) -> TaskGroup:
+def spark(indice: str, extracted_file: ExtractFileOperator) -> TaskGroup:
     with TaskGroup(group_id='processing') as processing:
-        with TaskGroup(group_id='paths') as paths:
-            people = get_bucket_path_wildcard.override(task_id='get_people_filepath')(extracted_file.output)
+        get_bucket_path = get_bucket_path_wildcard.override(task_id='get_people_filepath')(extracted_file.output)
 
-        task = SparkSubmitWithCredentialsOperator(
-            task_id=PEOPLE_INDEX_KEY,
-            application=(Path(__file__).parent.parent / 'spark' / f'{PEOPLE_INDEX_KEY}.py').as_posix(),
+        process_files = SparkSubmitWithCredentialsOperator(
+            task_id='people',
+            application=(Path(__file__).parent.parent / 'spark' / 'people.py').as_posix(),
             verbose=False,
             conn_id='spark_default',
-            executor_memory='5G',
+            executor_memory='1G',
+            total_executor_cores=1,
             conf={
-                'spark.aletheia.buckets.people': SparkConfFromXCom(people, lookup=[]),
+                'spark.aletheia.buckets.people': SparkConfFromXCom(get_bucket_path, lookup=[]),
 
                 'spark.hadoop.fs.s3a.path.style.access': 'true',
                 'spark.hadoop.fs.s3a.access.key': SparkConfFromConnection(conn_id='minio_default', field='login'),
@@ -55,7 +54,7 @@ def spark(indices: Dict[str, Any], extracted_file: ExtractFileOperator) -> TaskG
                 ),
                 'spark.es.nodes': SparkConfFromConnection(conn_id='elasticsearch_default', field='host'),
                 'spark.es.port': SparkConfFromConnection(conn_id='elasticsearch_default', field='port'),
-                'spark.es.resource': SparkConfFromXCom(indices[PEOPLE_INDEX_KEY], lookup=[]),
+                'spark.es.resource': SparkConfFromXCom(indice, lookup=[]),
             },
             packages=[
                 'com.amazonaws:aws-java-sdk-pom:1.12.164',
@@ -63,6 +62,7 @@ def spark(indices: Dict[str, Any], extracted_file: ExtractFileOperator) -> TaskG
                 'org.elasticsearch:elasticsearch-spark-30_2.12:8.3.2',
             ],
         )
-        paths >> task
+
+        get_bucket_path >> process_files
 
     return processing

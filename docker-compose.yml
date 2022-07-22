@@ -12,7 +12,7 @@ services:
 
   # Spark
   spark:
-    image: bitnami/spark:3
+    image: bitnami/spark:3.2.1
     environment:
       SPARK_MODE: master
     restart: unless-stopped
@@ -20,7 +20,7 @@ services:
       - 7077:7077
   
   spark-worker:
-    image: bitnami/spark:3
+    image: bitnami/spark:3.2.1
     environment:
       SPARK_MODE: worker
       SPARK_MASTER_URL: spark://spark:7077
@@ -64,6 +64,11 @@ services:
     image: minio/minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 2G
     volumes:
       - ./.docker/minio:/data
     ports:
@@ -75,6 +80,11 @@ services:
     environment:
       - elasticsearch.hosts=["http://elasticsearch:9200"]
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
     ports:
       - 5601:5601
     depends_on:

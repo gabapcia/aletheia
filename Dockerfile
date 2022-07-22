@@ -10,8 +10,8 @@ WORKDIR /opt/airflow
 COPY requirements.txt .
 
 RUN pip install -Ur requirements.txt
-RUN pip install -U apache-airflow[celery,postgres,elasticsearch,redis,apache.spark]==2.3.3 \
-    --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.3.3/constraints-3.8.txt"
+RUN pip install -U apache-airflow[celery,postgres,elasticsearch,redis,apache.spark]==2.3.2 \
+    --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.3.2/constraints-3.8.txt"
 
 COPY . .
 

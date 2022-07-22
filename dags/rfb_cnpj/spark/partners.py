@@ -37,9 +37,9 @@ code_schema = StructType([
 # Enums
 partner_type_df = spark.createDataFrame(
     data={
-        1: 'PJ',
-        2: 'PF',
-        3: 'FOREIGN',
+        1: 'PESSOA JURÍDICA',
+        2: 'PESSOA FÍSICA',
+        3: 'ESTRANGEIRO',
     }.items(),
     schema=code_schema,
 )

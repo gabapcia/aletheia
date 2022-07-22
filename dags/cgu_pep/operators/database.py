@@ -1,14 +1,9 @@
-from typing import Any, Dict, Tuple
 from airflow.decorators import task
-from airflow.utils.task_group import TaskGroup
 from airflow.providers.elasticsearch.hooks.elasticsearch import ElasticsearchHook
 
 
-PEOPLE_INDEX_KEY = 'people'
-
-
 @task
-def people_index() -> str:
+def elasticsearch() -> str:
     index_name = 'cgu-pep-people'
     company_index_conf = {
         'settings': {
@@ -35,12 +30,3 @@ def people_index() -> str:
             conn.es.indices.create(index_name, body=company_index_conf)
 
     return index_name
-
-
-def elasticsearch() -> Tuple[TaskGroup, Dict[str, Any]]:
-    with TaskGroup(group_id='elasticsearch') as elasticsearch:
-        people_index_name = people_index()
-
-    return elasticsearch, {
-        PEOPLE_INDEX_KEY: people_index_name,
-    }
