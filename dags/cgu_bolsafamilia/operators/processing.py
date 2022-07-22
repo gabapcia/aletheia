@@ -46,7 +46,6 @@ def spark(indices: List[Dict[str, str]]) -> TaskGroup:
             'spark.es.resource': indices[PEOPLE_INDEX_KEY],
         }
 
-
     SparkSubmitWithCredentialsOperator.partial(
         retries=2,
         retry_delay=timedelta(seconds=300),
