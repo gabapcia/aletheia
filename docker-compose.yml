@@ -26,6 +26,9 @@ services:
       SPARK_MASTER_URL: spark://spark:7077
     restart: unless-stopped
     deploy:
+      resources:
+        limits:
+          memory: 6G
       replicas: 3
     depends_on:
       - spark
@@ -54,7 +57,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4'
+          cpus: '2.5'
           memory: 4G
     volumes:
       - ./.docker/elasticsearch:/usr/share/elasticsearch/data
