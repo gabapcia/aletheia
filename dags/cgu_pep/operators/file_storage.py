@@ -6,7 +6,7 @@ from minio_plugin.utils.lookup import FolderLookup as MinioFolderLookup
 from cgu_pep.operators.scraper import GENERATED_AT_KEY, FILE_URI_KEY
 
 
-MINIO_BUCKET = 'cgu-pep'
+MINIO_BUCKET = 'cgu'
 
 ROOT_FOLDER_KEY = 'root_folder'
 TASK_KEY = 'task'

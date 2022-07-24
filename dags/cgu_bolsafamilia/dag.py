@@ -6,7 +6,7 @@ from airflow.decorators import dag
 from include.xcom_handler import drop_null
 from cgu_bolsafamilia.operators.scraper import bolsa_familia
 from cgu_bolsafamilia.operators.idempotence import save_filedate
-from cgu_bolsafamilia.operators.storage import download, extract, delete_folder
+from cgu_bolsafamilia.operators.file_storage import download, extract, delete_folder
 from cgu_bolsafamilia.operators.database import elasticsearch
 from cgu_bolsafamilia.operators.processing import spark
 

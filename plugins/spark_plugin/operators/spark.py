@@ -8,28 +8,36 @@ class SparkSubmitWithCredentialsOperator(SparkSubmitOperator):
     def __init__(
         self,
         packages: Optional[Union[List[str], str]] = None,
-        conf: Optional[Dict[str, Union[str, ConfFromConnection, ConfFromXCom]]] = None,
+        conf: Optional[Dict[str, str]] = None,
+        lazy_conf: Optional[Dict[str, Union[ConfFromConnection, ConfFromXCom]]] = None,
         *args,
         **kwargs,
     ) -> None:
+        conf = conf or dict()
+        lazy_conf = lazy_conf or dict()
+
         if isinstance(packages, list):
             packages = ','.join(packages)
 
-        if isinstance(conf, dict):
-            nconf = dict()
-            on_fly = list()
-            for k, v in conf.items():
-                if isinstance(v, ConfFromConnection):
-                    v = v.get()
-                elif isinstance(v, ConfFromXCom):
-                    on_fly.append(k)
+        self._on_fly: List[ConfFromXCom] = list()
 
-                nconf[k] = v
+        conf = self._load_conf(conf=conf)
+        conf.update(self._load_conf(conf=lazy_conf))
 
-            conf = nconf
-
-        self._on_fly = on_fly
         super().__init__(packages=packages, conf=conf, *args, **kwargs)
+
+    def _load_conf(self, conf: Dict[str, Union[ConfFromConnection, ConfFromXCom]]) -> Dict[str, str]:
+        nconf = dict()
+
+        for k, v in conf.items():
+            if isinstance(v, ConfFromConnection):
+                v = v.get()
+            elif isinstance(v, ConfFromXCom):
+                self._on_fly.append(k)
+
+            nconf[k] = v
+
+        return nconf
 
     def execute(self, context: Context) -> None:
         for key in self._on_fly:

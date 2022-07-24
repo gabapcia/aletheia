@@ -1,7 +1,7 @@
 from typing import Dict
 from airflow.decorators import task
 from airflow.providers.elasticsearch.hooks.elasticsearch import ElasticsearchHook
-from cgu_bolsafamilia.operators.storage import FILEDATE_KEY
+from cgu_bolsafamilia.operators.file_storage import FILEDATE_KEY
 
 
 PEOPLE_INDEX_KEY = 'people'

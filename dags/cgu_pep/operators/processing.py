@@ -5,7 +5,7 @@ from airflow.decorators import task
 from minio_plugin.operators.extract_file import ExtractFileOperator
 from spark_plugin.operators.spark import SparkSubmitWithCredentialsOperator
 from spark_plugin.utils.lookup import ConfFromConnection as SparkConfFromConnection, ConfFromXCom as SparkConfFromXCom
-from cgu_pep.operators.storage import MINIO_BUCKET
+from cgu_pep.operators.file_storage import MINIO_BUCKET
 
 
 @task
@@ -34,7 +34,7 @@ def spark(indice: str, extracted_file: ExtractFileOperator) -> TaskGroup:
             conn_id='spark_default',
             executor_memory='1G',
             total_executor_cores=1,
-            conf={
+            lazy_conf={
                 'spark.aletheia.buckets.people': SparkConfFromXCom(get_bucket_path, lookup=[]),
 
                 'spark.hadoop.fs.s3a.path.style.access': 'true',

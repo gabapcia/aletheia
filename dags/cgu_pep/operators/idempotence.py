@@ -1,6 +1,6 @@
 from airflow.decorators import task
 from minio_plugin.hooks.minio_hook import MinioHook
-from cgu_pep.operators.storage import MINIO_BUCKET
+from cgu_pep.operators.file_storage import MINIO_BUCKET
 
 
 class AlreadyExists(Exception):

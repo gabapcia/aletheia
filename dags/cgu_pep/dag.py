@@ -5,7 +5,7 @@ from airflow.decorators import dag
 
 from cgu_pep.operators.scraper import peps, GENERATED_AT_KEY
 from cgu_pep.operators.idempotence import save_filedate
-from cgu_pep.operators.storage import download, extract, delete_files, ROOT_FOLDER_KEY, TASK_KEY
+from cgu_pep.operators.file_storage import download, extract, delete_files, ROOT_FOLDER_KEY, TASK_KEY
 from cgu_pep.operators.database import elasticsearch
 from cgu_pep.operators.processing import spark
 
