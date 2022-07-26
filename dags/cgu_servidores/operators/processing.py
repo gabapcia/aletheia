@@ -61,7 +61,7 @@ def spark(indices: List[Dict[str, str]], filetype: str) -> TaskGroup:
         application=(Path(__file__).parent.parent / 'spark' / f'{filetype}.py').as_posix(),
         verbose=False,
         conn_id='spark_default',
-        executor_memory='2G',
+        executor_memory='1G',
         total_executor_cores=1,
         lazy_conf={
             'spark.hadoop.fs.s3a.path.style.access': 'true',

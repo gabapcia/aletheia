@@ -17,7 +17,7 @@ from cgu_bolsafamilia.operators.processing import spark
     max_active_runs=1,
     start_date=datetime(2022, 1, 1, tz=timezone('UTC')),
     schedule_interval='@daily',
-    tags=['CGU'],
+    tags=['CGU', 'PF'],
     default_args={},
 )
 def cgu_bolsafamilia():

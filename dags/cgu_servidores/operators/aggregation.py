@@ -62,6 +62,9 @@ def name_files(files: Dict[str, Union[str, List[str]]], filetype: str) -> Dict[s
 
 @task(multiple_outputs=False)
 def join_named_files(named_file: Dict[str, str], honorary_files: List[Dict[str, str]]) -> Dict[str, str]:
+    named_file[HONORARY_ADVOCATIVE_KEY] = ''
+    named_file[HONORARY_JETONS_KEY] = ''
+
     for honorary_file in filter(lambda f: f[FILEDATE_KEY] == named_file[FILEDATE_KEY], honorary_files):
         if HONORARY_ADVOCATIVE_KEY in honorary_file:
             named_file[HONORARY_ADVOCATIVE_KEY] = honorary_file[HONORARY_ADVOCATIVE_KEY]
