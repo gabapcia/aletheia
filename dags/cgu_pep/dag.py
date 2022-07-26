@@ -11,7 +11,7 @@ from cgu_pep.operators.processing import spark
 
 
 @dag(
-    description='Pessoas Expostas Politicamente (PEP) from Controladoria-Geral da União',
+    description='Pessoas Expostas Politicamente (PEP) da Controladoria-Geral da União',
     catchup=False,
     max_active_runs=1,
     start_date=datetime(2022, 1, 1, tz=timezone('UTC')),

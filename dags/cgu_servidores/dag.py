@@ -15,7 +15,7 @@ from cgu_servidores.operators.processing import spark
 
 
 @dag(
-    description='Servidores Civis e Militares do Executivo Federal from Controladoria-Geral da União',
+    description='Servidores Civis e Militares do Executivo Federal da Controladoria-Geral da União',
     catchup=False,
     max_active_runs=1,
     start_date=datetime(2022, 1, 1, tz=timezone('UTC')),

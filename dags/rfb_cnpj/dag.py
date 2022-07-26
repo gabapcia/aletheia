@@ -14,7 +14,7 @@ from rfb_cnpj.operators.processing import spark
 
 
 @dag(
-    description='CNPJs from Receita Federal do Brasil',
+    description='CNPJs da Receita Federal do Brasil',
     catchup=False,
     max_active_runs=1,
     start_date=datetime(2022, 1, 1, tz=timezone('UTC')),
