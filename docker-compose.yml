@@ -50,6 +50,7 @@ services:
     image: elasticsearch:8.3.2
     environment:
       - xpack.security.enabled=false
+      - action.destructive_requires_name=false
       - discovery.type=single-node
     restart: unless-stopped
     ports:
@@ -87,7 +88,7 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: 512M
+          memory: 1G
     ports:
       - 5601:5601
     depends_on:
