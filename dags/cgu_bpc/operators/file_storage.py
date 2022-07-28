@@ -1,10 +1,7 @@
-from tempfile import NamedTemporaryFile
-from zipfile import ZipFile
 from typing import Dict, Tuple
 from airflow.decorators import task
 from minio_plugin.hooks.minio_hook import MinioHook
 from minio_plugin.utils.file import HTTPFile
-from minio_plugin.utils.wrapper import FileLike
 
 
 MINIO_BUCKET = 'cgu-bpc'
