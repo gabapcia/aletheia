@@ -11,7 +11,7 @@ PEOPLE_INDEX_KEY = 'people'
 def elasticsearch(files: Dict[str, str]) -> Dict[str, str]:
     data = files.copy()
 
-    index_name = f'cgu-bolsafamilia-people-{data[FILEDATE_KEY]}'
+    index_name = f'cgu-bolsafamilia-{data[FILEDATE_KEY]}'
     company_index_conf = {
         'settings': {
             'index.mapping.coerce': False,

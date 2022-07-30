@@ -20,7 +20,7 @@ def download(link: Tuple[str, str]) -> Dict[str, str]:
     root_folder = f'/{filedate}'
     minio = MinioHook(conn_id=MINIO_CONN_ID)
 
-    with HTTPFile(uri=link, timeout=2 * 60) as f:
+    with HTTPFile(uri=link, timeout=2 * 60, size=-1) as f:
         file = minio.save(reader=f, bucket=MINIO_BUCKET, folder=root_folder)
 
     return {

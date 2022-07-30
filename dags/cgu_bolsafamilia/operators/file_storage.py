@@ -22,10 +22,10 @@ def download(links: Tuple[str, Dict[str, str]]) -> Dict[str, str]:
     root_folder = f'/{filedate}'
     minio = MinioHook(conn_id='minio_default')
 
-    with HTTPFile(uri=links[PAYMENT_KEY], name=f'{PAYMENT_KEY}.zip', timeout=2 * 60) as payment_file:
+    with HTTPFile(uri=links[PAYMENT_KEY], name=f'{PAYMENT_KEY}.zip', timeout=2 * 60, size=-1) as payment_file:
         payment_zip = minio.save(reader=payment_file, bucket=MINIO_BUCKET, folder=root_folder)
 
-    with HTTPFile(uri=links[WITHDRAW_KEY], name=f'{WITHDRAW_KEY}.zip', timeout=2 * 60) as withdraw_file:
+    with HTTPFile(uri=links[WITHDRAW_KEY], name=f'{WITHDRAW_KEY}.zip', timeout=2 * 60, size=-1) as withdraw_file:
         withdraw_zip = minio.save(reader=withdraw_file, bucket=MINIO_BUCKET, folder=root_folder)
 
     return {

@@ -11,7 +11,7 @@ INDEX_KEY = 'index'
 
 @task(multiple_outputs=False)
 def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
-    index_name = f'cgu-cpcc-transactions-{file_data[FILEDATE_KEY]}'
+    index_name = f'cgu-cpcc-{file_data[FILEDATE_KEY]}'
     transaction_index_conf = {
         'settings': {
             'index.mapping.coerce': False,

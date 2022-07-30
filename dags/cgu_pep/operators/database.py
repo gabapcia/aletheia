@@ -4,7 +4,7 @@ from airflow.providers.elasticsearch.hooks.elasticsearch import ElasticsearchHoo
 
 @task
 def elasticsearch() -> str:
-    index_name = 'cgu-pep-people'
+    index_name = 'cgu-pep'
     company_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
