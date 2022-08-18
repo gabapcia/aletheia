@@ -11,37 +11,39 @@ INDEX_KEY = 'index'
 
 @task(multiple_outputs=False)
 def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
-    index_name = f"cgu-bpc-{file_data[FILEDATE_KEY]}"
+    index_name = f'cgu-bpc-{file_data[FILEDATE_KEY]}'
     people_index_conf = {
-        "settings": {
-            "index.mapping.coerce": False,
+        'settings': {
+            'index.mapping.coerce': False,
+            'number_of_shards': 1,
+            'number_of_replicas': 0,
         },
-        "mappings": {
-            "properties": {
-                "year_month_competence": {"type": "keyword", "index": False},
-                "year_month_reference": {"type": "keyword", "index": False},
-                "federative_unit": {"type": "keyword", "index": False},
-                "siafi_county_code": {"type": "keyword", "index": False},
-                "county": {"type": "text", "index": False},
-                "benefit_number": {"type": "keyword", "index": False},
-                "benefit_granted_in_court": {"type": "boolean", "index": False},
-                "installment_value": {"type": "long", "index": False},
-                "nis": {"type": "keyword"},
-                "cpf": {"type": "keyword"},
-                "name": {
-                    "type": "text",
-                    "fields": {
-                        "keyword": {"type": "keyword"},
+        'mappings': {
+            'properties': {
+                'year_month_competence': {'type': 'keyword'},
+                'year_month_reference': {'type': 'keyword'},
+                'federative_unit': {'type': 'keyword'},
+                'siafi_county_code': {'type': 'keyword'},
+                'county': {'type': 'text', 'index': False},
+                'benefit_number': {'type': 'keyword'},
+                'benefit_granted_in_court': {'type': 'boolean'},
+                'installment_value': {'type': 'long'},
+                'nis': {'type': 'keyword'},
+                'cpf': {'type': 'keyword'},
+                'name': {
+                    'type': 'text',
+                    'fields': {
+                        'keyword': {'type': 'keyword'},
                     },
                 },
-                "legal_representative": {
-                    "properties": {
-                        "nis": {"type": "keyword"},
-                        "cpf": {"type": "keyword"},
-                        "name": {
-                            "type": "text",
-                            "fields": {
-                                "keyword": {"type": "keyword"},
+                'legal_representative': {
+                    'properties': {
+                        'nis': {'type': 'keyword'},
+                        'cpf': {'type': 'keyword'},
+                        'name': {
+                            'type': 'text',
+                            'fields': {
+                                'keyword': {'type': 'keyword'},
                             },
                         },
                     },

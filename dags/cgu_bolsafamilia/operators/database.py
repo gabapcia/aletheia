@@ -15,14 +15,16 @@ def elasticsearch(files: Dict[str, str]) -> Dict[str, str]:
     company_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
+            'number_of_shards': 1,
+            'number_of_replicas': 0,
         },
         'mappings': {
             'properties': {
-                'reference_date': {'type': 'date', 'index': False},
-                'competency_date': {'type': 'date', 'index': False},
-                'federative_unit': {'type': 'keyword', 'index': False},
+                'reference_date': {'type': 'date'},
+                'competency_date': {'type': 'date'},
+                'federative_unit': {'type': 'keyword'},
                 'county_siafi_code': {'type': 'keyword', 'index': False},
-                'county_siafi': {'type': 'text', 'index': False},
+                'county_siafi': {'type': 'text'},
                 'tax_id': {'type': 'keyword'},
                 'nis': {'type': 'keyword'},
                 'name': {
@@ -31,12 +33,12 @@ def elasticsearch(files: Dict[str, str]) -> Dict[str, str]:
                         'keyword': {'type': 'keyword'},
                     },
                 },
-                'value': {'type': 'long', 'index': False},
+                'value': {'type': 'long'},
                 'withdraws': {
                     'type': 'nested',
                     'properties': {
-                        'date': {'type': 'date', 'index': False},
-                        'value': {'type': 'long', 'index': False},
+                        'date': {'type': 'date'},
+                        'value': {'type': 'long'},
                     },
                 },
             },

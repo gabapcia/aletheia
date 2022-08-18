@@ -1,14 +1,7 @@
+from airflow.exceptions import AirflowSkipException
 from airflow.decorators import task
 from minio_plugin.hooks.minio_hook import MinioHook
 from cgu_pep.operators.file_storage import MINIO_BUCKET
-
-
-class AlreadyExists(Exception):
-    def __init__(self, filedate: str) -> None:
-        self.filedate = filedate
-
-    def __str__(self) -> str:
-        return f'"{self.filedate}" already exists'
 
 
 @task
@@ -19,4 +12,4 @@ def save_filedate(filedate: str) -> None:
 
     objects = list(minio.list_objects(MINIO_BUCKET, prefix=f'/{filedate}', recursive=False))
     if len(objects) > 0:
-        raise AlreadyExists(filedate=filedate)
+        raise AirflowSkipException

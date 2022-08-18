@@ -68,7 +68,7 @@ def _group_files(data: Dict[str, str]) -> Dict[str, Dict[str, str]]:
 
 @task(multiple_outputs=False)
 def servidores() -> List[Dict[str, Union[str, Dict[str, Dict[str, str]]]]]:
-    with httpx.Client(timeout=5) as client:
+    with httpx.Client(timeout=30) as client:
         r = client.get(BASE_URL)
         r.raise_for_status()
 

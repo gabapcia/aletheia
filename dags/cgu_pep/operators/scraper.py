@@ -17,7 +17,7 @@ FILE_URI_KEY = 'uri'
 
 @task(multiple_outputs=True)
 def peps() -> Dict[str, str]:
-    with httpx.Client(timeout=5) as client:
+    with httpx.Client(timeout=30) as client:
         r = client.get(CGU_PEP_URI)
         r.raise_for_status()
 

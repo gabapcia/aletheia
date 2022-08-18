@@ -1,6 +1,7 @@
 httpx[http2]
 beautifulsoup4
 unidecode
+dateparser
 minio
 python-magic
 pyspark

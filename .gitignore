@@ -152,8 +152,8 @@ cython_debug/
 #.idea/
 
 # Local
-.vscode/
-.docker/
+.vscode
+.docker
 .devcontainer/
 logs/
 run.sh

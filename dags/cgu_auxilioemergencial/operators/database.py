@@ -15,12 +15,14 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
     people_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
+            'number_of_shards': 1,
+            'number_of_replicas': 0,
         },
         'mappings': {
             'properties': {
-                'year_month_reference': {'type': 'keyword', 'index': False},
-                'federative_unit': {'type': 'keyword', 'index': False},
-                'ibge_county_code': {'type': 'keyword', 'index': False},
+                'year_month_reference': {'type': 'keyword'},
+                'federative_unit': {'type': 'keyword'},
+                'ibge_county_code': {'type': 'keyword'},
                 'county': {'type': 'text', 'index': False},
                 'nis': {'type': 'keyword'},
                 'cpf': {'type': 'keyword'},
@@ -42,10 +44,10 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
                         },
                     },
                 },
-                'framework': {'type': 'text', 'index': False},
-                'installment': {'type': 'keyword', 'index': False},
+                'framework': {'type': 'text'},
+                'installment': {'type': 'keyword'},
                 'observation': {'type': 'text', 'index': False},
-                'installment_value': {'type': 'long', 'index': False},
+                'installment_value': {'type': 'long'},
             },
         },
     }

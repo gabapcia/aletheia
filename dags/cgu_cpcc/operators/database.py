@@ -15,16 +15,18 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
     transaction_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
+            'number_of_shards': 1,
+            'number_of_replicas': 0,
         },
         'mappings': {
             'properties': {
-                'higher_agency_code': {'type': 'keyword', 'index': False},
+                'higher_agency_code': {'type': 'keyword'},
                 'higher_agency_name': {'type': 'text', 'index': False},
-                'agency_code': {'type': 'keyword', 'index': False},
+                'agency_code': {'type': 'keyword'},
                 'agency_name': {'type': 'text', 'index': False},
-                'management_unit_code': {'type': 'keyword', 'index': False},
+                'management_unit_code': {'type': 'keyword'},
                 'management_unit_name': {'type': 'text', 'index': False},
-                'statement_year_month': {'type': 'keyword', 'index': False},
+                'statement_year_month': {'type': 'keyword'},
                 'acquisition_type': {'type': 'text', 'index': False},
                 'beneficiary_tax_id': {'type': 'keyword'},
                 'beneficiary_name': {
@@ -34,8 +36,8 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
                     },
                 },
                 'transaction': {'type': 'text', 'index': False},
-                'transaction_date': {'type': 'date', 'index': False},
-                'transaction_value': {'type': 'long', 'index': False},
+                'transaction_date': {'type': 'date'},
+                'transaction_value': {'type': 'long'},
             },
         },
     }

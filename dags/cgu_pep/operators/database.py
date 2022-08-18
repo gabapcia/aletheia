@@ -8,18 +8,20 @@ def elasticsearch() -> str:
     company_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
+            'number_of_shards': 1,
+            'number_of_replicas': 0,
         },
         'mappings': {
             'properties': {
                 'tax_id': {'type': 'keyword'},
                 'name': {'type': 'text'},
-                'role.initials': {'type': 'keyword', 'index': False},
-                'role.description': {'type': 'text', 'index': False},
-                'role.level': {'type': 'keyword', 'index': False},
-                'federal_agency': {'type': 'keyword', 'index': False},
-                'entry_date': {'type': 'date', 'index': False},
-                'exit_date': {'type': 'date', 'index': False},
-                'grace_period_end_date': {'type': 'date', 'index': False}
+                'federal_agency': {'type': 'keyword'},
+                'entry_date': {'type': 'date'},
+                'exit_date': {'type': 'date'},
+                'grace_period_end_date': {'type': 'date'},
+                'role_initials': {'type': 'keyword'},
+                'role_description': {'type': 'text'},
+                'role_level': {'type': 'keyword'},
             }
         }
     }

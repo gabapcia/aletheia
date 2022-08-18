@@ -32,13 +32,13 @@ def spark(indices: List[Dict[str, str]]) -> TaskGroup:
     SparkSubmitWithCredentialsOperator.partial(
         retries=2,
         retry_delay=timedelta(seconds=300),
-        max_active_tis_per_dag=3,
+        max_active_tis_per_dag=1,
         do_xcom_push=False,
         task_id=PEOPLE_INDEX_KEY,
         application=(Path(__file__).parent.parent / 'spark' / f'{PEOPLE_INDEX_KEY}.py').as_posix(),
         verbose=False,
         conn_id='spark_default',
-        executor_memory='2G',
+        executor_memory='5G',
         total_executor_cores=6,
         lazy_conf={
             'spark.hadoop.fs.s3a.path.style.access': 'true',

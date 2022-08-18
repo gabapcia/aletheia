@@ -15,16 +15,18 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
     transaction_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
+            'number_of_shards': 1,
+            'number_of_replicas': 0,
         },
         'mappings': {
             'properties': {
-                'higher_agency_code': {'type': 'keyword', 'index': False},
+                'higher_agency_code': {'type': 'keyword'},
                 'higher_agency_name': {'type': 'text', 'index': False},
-                'agency_code': {'type': 'keyword', 'index': False},
+                'agency_code': {'type': 'keyword'},
                 'agency_name': {'type': 'text', 'index': False},
-                'management_unit_code': {'type': 'keyword', 'index': False},
+                'management_unit_code': {'type': 'keyword'},
                 'management_unit_name': {'type': 'text', 'index': False},
-                'statement_year_month': {'type': 'keyword', 'index': False},
+                'statement_year_month': {'type': 'keyword'},
                 'card_holder_cpf': {'type': 'keyword'},
                 'card_holder_name': {
                     'type': 'text',
@@ -39,13 +41,13 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
                         'keyword': {'type': 'keyword'},
                     },
                 },
-                'expense_performer': {'type': 'text', 'index': False},
-                'agreement_number': {'type': 'text', 'index': False},
-                'convenient_code': {'type': 'keyword', 'index': False},
+                'expense_performer': {'type': 'text'},
+                'agreement_number': {'type': 'text'},
+                'convenient_code': {'type': 'keyword'},
                 'convenor_name': {'type': 'text', 'index': False},
                 'transaction': {'type': 'text', 'index': False},
-                'transaction_date': {'type': 'date', 'index': False},
-                'transaction_value': {'type': 'long', 'index': False},
+                'transaction_date': {'type': 'date'},
+                'transaction_value': {'type': 'long'},
             },
         },
     }

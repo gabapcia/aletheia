@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import re
+from typing import Dict
 import httpx
 from httpx import codes
 
@@ -27,14 +28,15 @@ class FileReader(ABC):
 
 
 class HTTPFile(FileReader):
-    def __init__(self, uri: str, name: str = '', timeout: int = 5, **attrs) -> None:
+    def __init__(self, uri: str, name: str = '', timeout: int = 5, use_headers: Dict[str, str] = None, **attrs) -> None:
         self._uri = uri
         self._name = name
         self._timeout = timeout
+        self._use_headers = use_headers
         self._attrs = attrs
 
     def __enter__(self) -> 'HTTPFile':
-        self._stream = httpx.stream('GET', self._uri, timeout=self._timeout)
+        self._stream = httpx.stream('GET', self._uri, timeout=self._timeout, headers=self._use_headers)
         self._response = self._stream.__enter__()
 
         if self._response.status_code == codes.NOT_FOUND:

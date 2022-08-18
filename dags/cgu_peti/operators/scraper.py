@@ -13,7 +13,7 @@ BASE_URL = 'https://www.portaldatransparencia.gov.br/download-de-dados/peti'
 
 @task(multiple_outputs=False)
 def peti() -> Dict[str, str]:
-    with httpx.Client(timeout=5) as client:
+    with httpx.Client(timeout=30) as client:
         r = client.get(BASE_URL)
         r.raise_for_status()
 

@@ -13,7 +13,7 @@ BASE_URL = 'https://www.portaldatransparencia.gov.br/download-de-dados/seguro-de
 
 @task(multiple_outputs=False)
 def seguro_defeso() -> Dict[str, str]:
-    with httpx.Client(timeout=5) as client:
+    with httpx.Client(timeout=30) as client:
         r = client.get(BASE_URL)
         r.raise_for_status()
 
