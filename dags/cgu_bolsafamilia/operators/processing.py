@@ -32,14 +32,14 @@ def spark(indices: List[Dict[str, str]]) -> TaskGroup:
     SparkSubmitWithCredentialsOperator.partial(
         retries=2,
         retry_delay=timedelta(seconds=300),
-        max_active_tis_per_dag=1,
+        max_active_tis_per_dag=3,
         do_xcom_push=False,
         task_id=PEOPLE_INDEX_KEY,
         application=(Path(__file__).parent.parent / 'spark' / f'{PEOPLE_INDEX_KEY}.py').as_posix(),
         verbose=False,
         conn_id='spark_default',
-        executor_memory='5G',
-        total_executor_cores=6,
+        executor_memory='2G',
+        total_executor_cores=3,
         lazy_conf={
             'spark.hadoop.fs.s3a.path.style.access': 'true',
             'spark.hadoop.fs.s3a.access.key': SparkConfFromConnection(conn_id='minio_default', field='login'),
@@ -60,8 +60,8 @@ def spark(indices: List[Dict[str, str]]) -> TaskGroup:
             'spark.es.port': SparkConfFromConnection(conn_id='elasticsearch_default', field='port'),
         },
         packages=[
-            'com.amazonaws:aws-java-sdk-pom:1.12.164',
+            'com.amazonaws:aws-java-sdk-pom:1.12.319',
             'org.apache.hadoop:hadoop-aws:3.3.1',
-            'org.elasticsearch:elasticsearch-spark-30_2.12:8.3.2',
+            'org.elasticsearch:elasticsearch-spark-30_2.12:8.4.3',
         ],
     ).expand(conf=format_spark_conf.expand(indices=indices))

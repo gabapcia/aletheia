@@ -53,8 +53,8 @@ def spark(indices: List[Dict[str, str]]) -> TaskGroup:
             'spark.es.port': SparkConfFromConnection(conn_id='elasticsearch_default', field='port'),
         },
         packages=[
-            'com.amazonaws:aws-java-sdk-pom:1.12.164',
+            'com.amazonaws:aws-java-sdk-pom:1.12.319',
             'org.apache.hadoop:hadoop-aws:3.3.1',
-            'org.elasticsearch:elasticsearch-spark-30_2.12:8.3.2',
+            'org.elasticsearch:elasticsearch-spark-30_2.12:8.4.3',
         ],
     ).expand(conf=format_spark_conf.expand(indices=indices))

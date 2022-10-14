@@ -57,9 +57,9 @@ def spark(indice: str, extracted_file: ExtractFileOperator) -> TaskGroup:
                 'spark.es.resource': SparkConfFromXCom(indice, lookup=[]),
             },
             packages=[
-                'com.amazonaws:aws-java-sdk-pom:1.12.164',
+                'com.amazonaws:aws-java-sdk-pom:1.12.319',
                 'org.apache.hadoop:hadoop-aws:3.3.1',
-                'org.elasticsearch:elasticsearch-spark-30_2.12:8.3.2',
+                'org.elasticsearch:elasticsearch-spark-30_2.12:8.4.3',
             ],
         )
 
