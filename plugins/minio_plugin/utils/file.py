@@ -81,7 +81,7 @@ class HTTPFile(FileReader):
         return cl
 
     def name(self) -> str:
-        filename_re = re.search(r'filename="(?P<data>[^"])"', self._response.headers.get('Content-Disposition', ''))
+        filename_re = re.search(r'filename="(?P<data>[^"]+)"', self._response.headers.get('Content-Disposition', ''))
 
         if filename_re:
             name = filename_re.group('data')
