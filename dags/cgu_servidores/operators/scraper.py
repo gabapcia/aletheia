@@ -1,7 +1,7 @@
 import json
 import re
 from datetime import date
-from typing import Dict, List, Union
+from typing import Dict, List
 import httpx
 from bs4 import BeautifulSoup
 from unidecode import unidecode
@@ -16,17 +16,22 @@ PENSIONER_KEY = 'pensioner'
 EMPLOYEE_KEY = 'employee'
 HONORARY_KEY = 'honorary'
 FILE_TYPES = [RETIRED_KEY, PENSIONER_KEY, EMPLOYEE_KEY, HONORARY_KEY]
+
 RETIRED_BACEN_FILENAME = 'Aposentados_BACEN'
 RETIRED_SIAPE_FILENAME = 'Aposentados_SIAPE'
 RETIRED_MILITARY_FILENAME = 'Reserva_Reforma_Militares'
+
 PENSIONER_BACEN_FILENAME = 'Pensionistas_BACEN'
 PENSIONER_SIAPE_FILENAME = 'Pensionistas_SIAPE'
 PENSIONER_DEFESA_FILENAME = 'Pensionistas_DEFESA'
+
 EMPLOYEE_BACEN_FILENAME = 'Servidores_BACEN'
 EMPLOYEE_SIAPE_FILENAME = 'Servidores_SIAPE'
 EMPLOYEE_MILITARY_FILENAME = 'Militares'
+
 HONORARY_ADVOCATIVE_FILENAME = 'Honorarios_Advocaticios'
 HONORARY_JETONS_FILENAME = 'Honorarios_Jetons'
+
 RETIRED_FILE_NAMES = [RETIRED_BACEN_FILENAME, RETIRED_SIAPE_FILENAME, RETIRED_MILITARY_FILENAME]
 PENSIONER_FILE_NAMES = [PENSIONER_BACEN_FILENAME, PENSIONER_SIAPE_FILENAME, PENSIONER_DEFESA_FILENAME]
 EMPLOYEE_FILE_NAMES = [EMPLOYEE_BACEN_FILENAME, EMPLOYEE_SIAPE_FILENAME, EMPLOYEE_MILITARY_FILENAME]
@@ -67,7 +72,7 @@ def _group_files(data: Dict[str, str]) -> Dict[str, Dict[str, str]]:
 
 
 @task(multiple_outputs=False)
-def servidores() -> List[Dict[str, Union[str, Dict[str, Dict[str, str]]]]]:
+def servidores() -> Dict[str, Dict[str, Dict[str, str]]]:
     with httpx.Client(timeout=30) as client:
         r = client.get(BASE_URL)
         r.raise_for_status()
@@ -92,14 +97,17 @@ def servidores() -> List[Dict[str, Union[str, Dict[str, Dict[str, str]]]]]:
 
         raw_links[file_date][source] = file_uri
 
-    links = list()
+    links = dict()
     for file_date, file_types in raw_links.items():
         if len(file_types.keys()) > len(ALL_FILE_NAMES):
             raise MissingFileMap(file_types=list(file_types.keys()))
 
-        links.append({
-            **_group_files(file_types),
-            FILEDATE_KEY: file_date,
-        })
+        data = _group_files(file_types)
+
+        # Ensure that the military files exists to continue
+        if not data[EMPLOYEE_KEY].get(EMPLOYEE_MILITARY_FILENAME) and date.fromisoformat(file_date) > date(2022, 1, 1):
+            continue
+
+        links[file_date] = data
 
     return links

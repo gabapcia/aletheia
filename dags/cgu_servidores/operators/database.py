@@ -1,17 +1,28 @@
-from typing import Dict, List
+from typing import Union, Dict, List
 from elasticsearch.exceptions import RequestError as ElasticsearchRequestError
 from airflow.decorators import task
 from airflow.providers.elasticsearch.hooks.elasticsearch import ElasticsearchHook
-from cgu_servidores.operators.scraper import RETIRED_KEY, PENSIONER_KEY, EMPLOYEE_KEY
-from cgu_servidores.operators.aggregation import FILEDATE_KEY
+from cgu_servidores.operators.scraper import FILEDATE_KEY, RETIRED_KEY, PENSIONER_KEY, EMPLOYEE_KEY
+from cgu_servidores.operators.file_storage import FILE_TYPE_KEY
 
 
 INDEX_KEY = 'index'
 
 
 @task(multiple_outputs=False)
-def employee(named_files: Dict[str, str]) -> Dict[str, str]:
-    index_name = f'cgu-servidores-employee-{named_files[FILEDATE_KEY]}'
+def choose_catalog_by_type(catalog: List[Dict[str, Union[str, Dict[str, str]]]], filetype: str) -> List[Dict[str, Union[str, Dict[str, str]]]]:
+    filtered_catalog = list()
+
+    for item in catalog:
+        if item[FILE_TYPE_KEY] == filetype:
+            filtered_catalog.append(item)
+
+    return filtered_catalog
+
+
+@task(multiple_outputs=False)
+def employee_index(catalog: Dict[str, Union[str, Dict[str, str]]]) -> Dict[str, Union[str, Dict[str, str]]]:
+    index_name = f'cgu-servidores-employee-{catalog[FILEDATE_KEY]}'
     employee_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
@@ -152,14 +163,14 @@ def employee(named_files: Dict[str, str]) -> Dict[str, str]:
             if e.error != 'resource_already_exists_exception':
                 raise
 
-    named_files[INDEX_KEY] = index_name
+    catalog[INDEX_KEY] = index_name
 
-    return named_files
+    return catalog
 
 
 @task(multiple_outputs=False)
-def retired(named_files: Dict[str, str]) -> Dict[str, str]:
-    index_name = f'cgu-servidores-retired-{named_files[FILEDATE_KEY]}'
+def retired_index(catalog: Dict[str, Union[str, Dict[str, str]]]) -> Dict[str, Union[str, Dict[str, str]]]:
+    index_name = f'cgu-servidores-retired-{catalog[FILEDATE_KEY]}'
     retired_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
@@ -274,14 +285,14 @@ def retired(named_files: Dict[str, str]) -> Dict[str, str]:
             if e.error != 'resource_already_exists_exception':
                 raise
 
-    named_files[INDEX_KEY] = index_name
+    catalog[INDEX_KEY] = index_name
 
-    return named_files
+    return catalog
 
 
 @task(multiple_outputs=False)
-def pensioner(named_files: Dict[str, str]) -> Dict[str, str]:
-    index_name = f'cgu-servidores-pensioner-{named_files[FILEDATE_KEY]}'
+def pensioner_index(catalog: Dict[str, Union[str, Dict[str, str]]]) -> Dict[str, Union[str, Dict[str, str]]]:
+    index_name = f'cgu-servidores-pensioner-{catalog[FILEDATE_KEY]}'
     pensioner_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
@@ -412,14 +423,16 @@ def pensioner(named_files: Dict[str, str]) -> Dict[str, str]:
             if e.error != 'resource_already_exists_exception':
                 raise
 
-    named_files[INDEX_KEY] = index_name
+    catalog[INDEX_KEY] = index_name
 
-    return named_files
+    return catalog
 
 
-def elasticsearch(named_files: List[Dict[str, str]], filetype: str) -> List[Dict[str, str]]:
+def elasticsearch(catalog: List[Dict[str, Union[str, Dict[str, str]]]], filetype: str) -> List[Dict[str, Union[str, Dict[str, str]]]]:
+    filtered_catalog = choose_catalog_by_type.override(task_id=f'get_{filetype}_files')(catalog=catalog, filetype=filetype)
+
     return {
-        EMPLOYEE_KEY: employee,
-        RETIRED_KEY: retired,
-        PENSIONER_KEY: pensioner,
-    }[filetype].override(task_id=f'create_elasticsearch_{filetype}_index').expand(named_files=named_files)
+        EMPLOYEE_KEY: employee_index,
+        RETIRED_KEY: retired_index,
+        PENSIONER_KEY: pensioner_index,
+    }[filetype].expand(catalog=filtered_catalog)

@@ -50,6 +50,7 @@ if HONORARY_ADVOCATIVE_BUCKET_PATH:
             encoding='ISO-8859-1',
         )\
         .csv(f's3a://{HONORARY_ADVOCATIVE_BUCKET_PATH}')\
+        .where(f.col('id_portal') != '-11')\
         .select(
             'id_portal',
             'observacao',
@@ -68,6 +69,7 @@ if HONORARY_JETONS_BUCKET_PATH:
             encoding='ISO-8859-1',
         )\
         .csv(f's3a://{HONORARY_JETONS_BUCKET_PATH}')\
+        .where(f.col('id_portal') != '-11')\
         .select(
             'id_portal',
             'empresa',
@@ -218,7 +220,8 @@ register_df = spark.read\
         encoding='ISO-8859-1',
         dateFormat='dd/MM/yyyy',
     )\
-    .csv(f's3a://{REGISTER_BUCKET_PATH}')
+    .csv(f's3a://{REGISTER_BUCKET_PATH}')\
+    .where(f.col('id_portal') != '-11')
 
 salary_df = spark.read\
     .schema(salary_schema)\
@@ -229,6 +232,7 @@ salary_df = spark.read\
         encoding='ISO-8859-1',
     )\
     .csv(f's3a://{SALARY_BUCKET_PATH}')\
+    .where(f.col('id_portal') != '-11')\
     .na.drop(how='any', subset=['ano', 'mes'])\
     .withColumn('ano_mes', f.lpad('mes', 2, '0'))\
     .drop('ano', 'mes')
@@ -242,6 +246,7 @@ observation_df = spark.read\
         encoding='ISO-8859-1',
     )\
     .csv(f's3a://{OBSERVATION_BUCKET_PATH}')\
+    .where(f.col('id_portal') != '-11')\
     .select(
         'id_portal',
         'observacao',
