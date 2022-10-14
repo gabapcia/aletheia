@@ -1,14 +1,11 @@
+from datetime import timedelta
 from pendulum import datetime
 from pendulum.tz import timezone
 from airflow.decorators import dag
 
-from minio_plugin.operators.delete_folder import DeleteFolderOperator
-
-from rfb_cnpj.operators.download import MINIO_BUCKET
-from rfb_cnpj.operators.scraper import cnpjs, GENERATED_AT_KEY
-from rfb_cnpj.operators.idempotence import save_filedate
-from rfb_cnpj.operators.download import download
-from rfb_cnpj.operators.extract import extract
+from rfb_cnpj.operators.scraper import cnpjs
+from rfb_cnpj.operators.idempotence import idempotence
+from rfb_cnpj.operators.file_storage import flat_catalog, download, extract, delete_folder
 from rfb_cnpj.operators.database import elasticsearch
 from rfb_cnpj.operators.processing import spark
 
@@ -23,27 +20,30 @@ from rfb_cnpj.operators.processing import spark
     default_args={},
 )
 def rfb_cnpj():
-    links = cnpjs()
+    catalog = cnpjs()
 
-    check_if_already_exists = save_filedate(links[GENERATED_AT_KEY])
+    idempotence_task = idempotence(data=catalog)
 
-    download_group, download_tasks = download(links)
-
-    extract_group, extract_tasks = extract(links, download_tasks)
-
-    elasticsearch_group, indices_tasks = elasticsearch()
-
-    spark_group = spark(indices_tasks, extract_tasks)
-
-    delete_extracted_files = DeleteFolderOperator(
-        task_id='delete_extracted_files',
-        bucket=MINIO_BUCKET,
-        folder=extract_tasks['root_folder'],
-        minio_conn_id='minio_default',
+    download_tasks = (
+        download
+        .override(
+            retries=10,
+            retry_delay=timedelta(seconds=30),
+            max_active_tis_per_dag=6,
+        )
+        .expand(data=flat_catalog(catalog=catalog))
     )
+    idempotence_task >> download_tasks
 
-    links >> check_if_already_exists >> download_group >> extract_group
-    extract_group >> elasticsearch_group >> spark_group >> delete_extracted_files
+    extract_tasks = extract.expand(file_info=download_tasks)
+
+    elasticsearch_task = elasticsearch()
+    extract_tasks >> elasticsearch_task
+
+    spark_group = spark(elasticsearch_task, extract_tasks)
+
+    delete_extracted_files_task = delete_folder(catalog=extract_tasks)
+    spark_group >> delete_extracted_files_task
 
 
 # Register DAG

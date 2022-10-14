@@ -14,15 +14,15 @@ PARTNER_KEY = 'partner'
 COMPANY_KEY = 'company'
 BRANCH_KEY = 'branch'
 SIMPLES_KEY = 'simples_info'
-CNAE_INFO_KEY = 'cnae_info_map'
-REGISTER_SITUATION_KEY = 'register_situation_map'
-COUNTY_KEY = 'county_map'
+CNAE_INFO_KEY = 'cnae_info'
+REGISTER_SITUATION_KEY = 'register_situation'
+COUNTY_KEY = 'county'
 LEGAL_NATURE_KEY = 'legal_nature_info'
-COUNTRY_KEY = 'country_map'
-PARTNER_QUALIFICATION_KEY = 'partner_qualification_map'
-TAX_REGIME_KEY = 'tax_regime'
+COUNTRY_KEY = 'country'
+PARTNER_QUALIFICATION_KEY = 'partner_qualification'
+# TAX_REGIME_KEY = 'tax_regime'
 
-MAPPER_FILES = [
+SINGLE_FILES = [
     SIMPLES_KEY,
     CNAE_INFO_KEY,
     REGISTER_SITUATION_KEY,
@@ -82,9 +82,9 @@ def _get_uri_by_text(content: BeautifulSoup, target: str) -> str:
     raise ValueError(f'"{target}" file URI not found')
 
 
-@task(multiple_outputs=True)
+@task(multiple_outputs=False)
 def cnpjs() -> Dict[str, Union[List[str], str]]:
-    with httpx.Client(timeout=5) as client:
+    with httpx.Client(timeout=30) as client:
         r = client.get(RFB_CNPJ_URI)
         r.raise_for_status()
 
@@ -102,7 +102,7 @@ def cnpjs() -> Dict[str, Union[List[str], str]]:
         LEGAL_NATURE_KEY: _get_uri_by_text(content, 'atributo natureza juridica'),
         COUNTRY_KEY: _get_uri_by_text(content, 'atributo pais'),
         PARTNER_QUALIFICATION_KEY: _get_uri_by_text(content, 'atributo qualificacao dos socios'),
-        TAX_REGIME_KEY: _get_uri_by_text(content, 'regime tributario'),
+        # TAX_REGIME_KEY: _get_uri_by_text(content, 'regime tributario'),
     }
 
     return data
