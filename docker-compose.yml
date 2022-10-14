@@ -47,7 +47,7 @@ services:
       - 5432
 
   elasticsearch:
-    image: elasticsearch:8.3.2
+    image: elasticsearch:8.4.3
     environment:
       - xpack.security.enabled=false
       - action.destructive_requires_name=false
@@ -80,7 +80,7 @@ services:
 
   # Observability
   kibana:
-    image: kibana:8.3.2
+    image: kibana:8.4.3
     environment:
       - elasticsearch.hosts=["http://elasticsearch:9200"]
     restart: unless-stopped
