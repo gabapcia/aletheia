@@ -26,16 +26,13 @@ def employee_index(catalog: Dict[str, Union[str, Dict[str, str]]]) -> Dict[str, 
     employee_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
+            'number_of_shards': 1,
+            'number_of_replicas': 0,
         },
         'mappings': {
             'properties': {
                 'id_portal': {'type': 'keyword'},
-                'nome': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'nome': {'type': 'text'},
                 'cpf': {'type': 'keyword'},
                 'matricula': {'type': 'keyword'},
                 'cargos': {
@@ -174,16 +171,13 @@ def retired_index(catalog: Dict[str, Union[str, Dict[str, str]]]) -> Dict[str, U
     retired_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
+            'number_of_shards': 1,
+            'number_of_replicas': 0,
         },
         'mappings': {
             'properties': {
                 'id_portal': {'type': 'keyword'},
-                'nome': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'nome': {'type': 'text'},
                 'cpf': {'type': 'keyword'},
                 'matricula': {'type': 'keyword'},
                 'cargo': {
@@ -296,35 +290,22 @@ def pensioner_index(catalog: Dict[str, Union[str, Dict[str, str]]]) -> Dict[str,
     pensioner_index_conf = {
         'settings': {
             'index.mapping.coerce': False,
+            'number_of_shards': 1,
+            'number_of_replicas': 0,
         },
         'mappings': {
             'properties': {
                 'id_portal': {'type': 'keyword'},
-                'nome': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'nome': {'type': 'text'},
                 'cpf': {'type': 'keyword'},
                 'matricula': {'type': 'keyword'},
                 'instituidores_pensao': {
                     'type': 'nested',
                     'properties': {
                         'cpf_representante_legal': {'type': 'keyword'},
-                        'nome_representante_legal': {
-                            'type': 'text',
-                            'fields': {
-                                'keyword': {'type': 'keyword'},
-                            },
-                        },
+                        'nome_representante_legal': {'type': 'text'},
                         'cpf_instituidor_pensao': {'type': 'keyword'},
-                        'nome_instituidor_pensao': {
-                            'type': 'text',
-                            'fields': {
-                                'keyword': {'type': 'keyword'},
-                            },
-                        },
+                        'nome_instituidor_pensao': {'type': 'text'},
                         'codigo_tipo_pensao': {'type': 'keyword'},
                         'tipo_pensao': {'type': 'text', 'index': False},
                         'data_inicio_pensao': {'type': 'date'},

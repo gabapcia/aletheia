@@ -28,19 +28,9 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
                 'management_unit_name': {'type': 'text', 'index': False},
                 'statement_year_month': {'type': 'keyword'},
                 'card_holder_cpf': {'type': 'keyword'},
-                'card_holder_name': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'card_holder_name': {'type': 'text'},
                 'beneficiary_tax_id': {'type': 'keyword'},
-                'beneficiary_name': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'beneficiary_name': {'type': 'text'},
                 'expense_performer': {'type': 'text'},
                 'agreement_number': {'type': 'text'},
                 'convenient_code': {'type': 'keyword'},

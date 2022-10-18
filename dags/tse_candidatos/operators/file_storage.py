@@ -8,7 +8,7 @@ from minio_plugin.utils.wrapper import FileLike
 from tse_candidatos.operators.scraper import FILE_URI_KEY
 
 
-MINIO_BUCKET = 'tse-eleicoes'
+MINIO_BUCKET = 'tse-candidatos'
 MINIO_CONN_ID = 'minio_default'
 
 ROOT_FOLDER_KEY = 'folder'

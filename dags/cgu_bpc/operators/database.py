@@ -24,28 +24,18 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
                 'year_month_reference': {'type': 'keyword'},
                 'federative_unit': {'type': 'keyword'},
                 'siafi_county_code': {'type': 'keyword'},
-                'county': {'type': 'text', 'index': False},
+                'county': {'type': 'keyword'},
                 'benefit_number': {'type': 'keyword'},
                 'benefit_granted_in_court': {'type': 'boolean'},
                 'installment_value': {'type': 'long'},
                 'nis': {'type': 'keyword'},
                 'cpf': {'type': 'keyword'},
-                'name': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'name': {'type': 'text'},
                 'legal_representative': {
                     'properties': {
                         'nis': {'type': 'keyword'},
                         'cpf': {'type': 'keyword'},
-                        'name': {
-                            'type': 'text',
-                            'fields': {
-                                'keyword': {'type': 'keyword'},
-                            },
-                        },
+                        'name': {'type': 'text'},
                     },
                 },
             },

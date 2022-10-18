@@ -25,12 +25,7 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
                 'siafi_county_code': {'type': 'keyword'},
                 'county': {'type': 'text', 'index': False},
                 'nis': {'type': 'keyword'},
-                'name': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'name': {'type': 'text'},
                 'installment_status': {'type': 'keyword'},
                 'installment_value': {'type': 'long'},
             },

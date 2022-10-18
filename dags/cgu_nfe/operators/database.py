@@ -29,22 +29,12 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
                 'most_recent_event': {'type': 'text'},
                 'most_recent_event_date': {'type': 'date'},
                 'issuer_tax_id': {'type': 'keyword'},
-                'issuer_corporate_name': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'issuer_corporate_name': {'type': 'text'},
                 'issuer_state_registration': {'type': 'text'},
                 'issuer_federative_unit': {'type': 'keyword'},
                 'issuer_county': {'type': 'text'},
                 'recipient_cnpj': {'type': 'keyword'},
-                'recipient_name': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'recipient_name': {'type': 'text'},
                 'recipient_federative_unit': {'type': 'keyword'},
                 'recipient_state_tax': {'type': 'text'},
                 'operation_destination': {'type': 'text'},
@@ -64,22 +54,12 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
                     'type': 'nested',
                     'properties': {
                         'issuer_tax_id': {'type': 'keyword'},
-                        'issuer_corporate_name': {
-                            'type': 'text',
-                            'fields': {
-                                'keyword': {'type': 'keyword'},
-                            },
-                        },
+                        'issuer_corporate_name': {'type': 'text'},
                         'issuer_state_registration': {'type': 'text'},
                         'issuer_federative_unit': {'type': 'keyword'},
                         'issuer_county': {'type': 'text'},
                         'recipient_cnpj': {'type': 'keyword'},
-                        'recipient_name': {
-                            'type': 'text',
-                            'fields': {
-                                'keyword': {'type': 'keyword'},
-                            },
-                        },
+                        'recipient_name': {'type': 'text'},
                         'recipient_federative_unit': {'type': 'text'},
                         'recipient_state_tax': {'type': 'text'},
                         'operation_destination': {'type': 'text'},

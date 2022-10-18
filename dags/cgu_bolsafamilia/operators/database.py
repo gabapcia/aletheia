@@ -23,16 +23,11 @@ def elasticsearch(files: Dict[str, str]) -> Dict[str, str]:
                 'reference_date': {'type': 'date'},
                 'competency_date': {'type': 'date'},
                 'federative_unit': {'type': 'keyword'},
-                'county_siafi_code': {'type': 'keyword', 'index': False},
-                'county_siafi': {'type': 'text'},
+                'county_siafi_code': {'type': 'keyword'},
+                'county_siafi': {'type': 'keyword'},
                 'tax_id': {'type': 'keyword'},
                 'nis': {'type': 'keyword'},
-                'name': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'name': {'type': 'text'},
                 'value': {'type': 'long'},
                 'withdraws': {
                     'type': 'nested',

@@ -29,12 +29,7 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
                 'statement_year_month': {'type': 'keyword'},
                 'acquisition_type': {'type': 'text', 'index': False},
                 'beneficiary_tax_id': {'type': 'keyword'},
-                'beneficiary_name': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'beneficiary_name': {'type': 'text'},
                 'transaction': {'type': 'text', 'index': False},
                 'transaction_date': {'type': 'date'},
                 'transaction_value': {'type': 'long'},

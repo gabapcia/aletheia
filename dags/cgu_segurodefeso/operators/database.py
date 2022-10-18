@@ -27,12 +27,7 @@ def elasticsearch(file_data: Dict[str, str]) -> Dict[str, str]:
                 'cpf': {'type': 'keyword'},
                 'nis': {'type': 'keyword'},
                 'rgp': {'type': 'keyword'},
-                'name': {
-                    'type': 'text',
-                    'fields': {
-                        'keyword': {'type': 'keyword'},
-                    },
-                },
+                'name': {'type': 'text'},
                 'installment_value': {'type': 'long'},
             },
         },
