@@ -3,7 +3,7 @@ from typing import Dict, List
 from airflow.utils.task_group import TaskGroup
 from airflow.decorators import task, task_group
 from spark_plugin.operators.spark import SparkSubmitWithCredentialsOperator
-from spark_plugin.utils.lookup import ConfFromConnection as SparkConfFromConnection, ConfFromXCom as SparkConfFromXCom
+from spark_plugin.utils.lookup import ConfFromConnection as SparkConfFromConnection
 from rfb_cnpj.operators.scraper import GENERATED_AT_KEY, SINGLE_FILES
 from rfb_cnpj.operators.file_storage import MINIO_BUCKET, FILE_TYPE_KEY, ROOT_FOLDER_KEY, EXTRACTED_FILE_KEY
 

@@ -1,8 +1,8 @@
 from datetime import timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 from airflow.utils.task_group import TaskGroup
-from airflow.decorators import task, task_group
+from airflow.decorators import task
 from spark_plugin.operators.spark import SparkSubmitWithCredentialsOperator
 from spark_plugin.utils.lookup import ConfFromConnection as SparkConfFromConnection
 from cgu_servidores.operators.database import INDEX_KEY

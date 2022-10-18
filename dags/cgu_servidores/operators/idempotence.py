@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Dict
 from airflow.decorators import task
 from minio_plugin.hooks.minio_hook import MinioHook
 from cgu_servidores.operators.file_storage import MINIO_BUCKET
