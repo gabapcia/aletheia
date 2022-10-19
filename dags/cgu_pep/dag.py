@@ -3,11 +3,10 @@ from pendulum.tz import timezone
 from airflow.decorators import dag
 
 
-from cgu_pep.operators.scraper import peps, GENERATED_AT_KEY
-from cgu_pep.operators.idempotence import save_filedate
-from cgu_pep.operators.file_storage import download, extract, delete_files, ROOT_FOLDER_KEY, TASK_KEY
+from cgu_pep.operators.scraper import peps
+from cgu_pep.operators.file_storage import idempotence, download
 from cgu_pep.operators.database import elasticsearch
-from cgu_pep.operators.processing import spark
+from cgu_pep.operators.processing import memory
 
 
 @dag(
@@ -20,22 +19,17 @@ from cgu_pep.operators.processing import spark
     default_args={},
 )
 def cgu_pep():
-    links = peps()
+    fileinfo = peps()
 
-    idempotence = save_filedate(links[GENERATED_AT_KEY])
+    filepath = download(info=fileinfo)
 
-    download_job = download(links)
+    idempotence_check = idempotence(info=fileinfo)
+    idempotence_check >> filepath
 
-    extract_job = extract(links, download_job[TASK_KEY])
+    es_indice = elasticsearch()
+    filepath >> es_indice
 
-    indice_task = elasticsearch()
-
-    spark_group = spark(indice_task, extract_job[TASK_KEY])
-
-    delete_extracted_files = delete_files(extract_job[ROOT_FOLDER_KEY])
-
-    links >> idempotence >> download_job[TASK_KEY] >> extract_job[TASK_KEY] >> indice_task
-    indice_task >> spark_group >> delete_extracted_files
+    memory(filepath=filepath, es_indice=es_indice)
 
 
 # Register DAG

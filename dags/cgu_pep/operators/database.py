@@ -2,7 +2,7 @@ from airflow.decorators import task
 from airflow.providers.elasticsearch.hooks.elasticsearch import ElasticsearchHook
 
 
-@task
+@task(multiple_outputs=False)
 def elasticsearch() -> str:
     index_name = 'cgu-pep'
     company_index_conf = {
@@ -13,15 +13,16 @@ def elasticsearch() -> str:
         },
         'mappings': {
             'properties': {
-                'tax_id': {'type': 'keyword'},
-                'name': {'type': 'text'},
-                'federal_agency': {'type': 'keyword'},
-                'entry_date': {'type': 'date'},
-                'exit_date': {'type': 'date'},
-                'grace_period_end_date': {'type': 'date'},
-                'role_initials': {'type': 'keyword'},
-                'role_description': {'type': 'text'},
-                'role_level': {'type': 'keyword'},
+                'cpf': {'type': 'keyword'},
+                'nome': {'type': 'text'},
+                'sigle_funcao': {'type': 'keyword'},
+                'descricao_funcao': {'type': 'keyword'},
+                'nivel_funcao': {'type': 'keyword'},
+                'nome_orgao': {'type': 'keyword'},
+                'uf': {'type': 'keyword'},
+                'data_inicio_exercicio': {'type': 'date'},
+                'data_fim_exercicio': {'type': 'date'},
+                'data_fim_carencia': {'type': 'date'},
             }
         }
     }

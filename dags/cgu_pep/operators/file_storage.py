@@ -1,57 +1,33 @@
-from typing import Any, Dict
-from minio_plugin.operators.download import DownloadFileOperator
-from minio_plugin.operators.extract_file import ExtractFileOperator
-from minio_plugin.operators.delete_folder import DeleteFolderOperator
-from minio_plugin.utils.lookup import FolderLookup as MinioFolderLookup
+from typing import Dict
+from airflow.exceptions import AirflowSkipException
+from airflow.decorators import task
+from minio_plugin.hooks.minio_hook import MinioHook
+from minio_plugin.utils.file import HTTPFile
 from cgu_pep.operators.scraper import GENERATED_AT_KEY, FILE_URI_KEY
 
 
 MINIO_BUCKET = 'cgu-pep'
-
-ROOT_FOLDER_KEY = 'root_folder'
-TASK_KEY = 'task'
+MINIO_CONN_ID = 'minio_default'
 
 
-def download(links: Dict[str, Any]) -> Dict[str, Any]:
-    folder = MinioFolderLookup(links[GENERATED_AT_KEY], path='/{raw}')
+@task(multiple_outputs=False)
+def idempotence(info: Dict[str, str]) -> None:
+    folder = f'/{info[GENERATED_AT_KEY]}'
 
-    task = DownloadFileOperator(
-        task_id='download',
-        bucket=MINIO_BUCKET,
-        minio_conn_id='minio_default',
-        folder=MinioFolderLookup(links[GENERATED_AT_KEY], path='/{raw}'),
-        uri=links[FILE_URI_KEY],
-    )
+    hook = MinioHook(conn_id=MINIO_CONN_ID)
+    minio = hook.get_client()
 
-    return {
-        ROOT_FOLDER_KEY: folder,
-        TASK_KEY: task,
-    }
+    objects = list(minio.list_objects(MINIO_BUCKET, prefix=folder, recursive=False))
+    if len(objects) > 0:
+        raise AirflowSkipException
 
 
-def extract(links: Dict[str, Any], download_task: DownloadFileOperator) -> Dict[str, Any]:
-    folder = MinioFolderLookup(links[GENERATED_AT_KEY], path='/{raw}/extracted')
+@task(multiple_outputs=False)
+def download(info: Dict[str, str]) -> str:
+    folder = f'/{info[GENERATED_AT_KEY]}'
 
-    task = ExtractFileOperator(
-        task_id='extract',
-        bucket=MINIO_BUCKET,
-        minio_conn_id='minio_default',
-        folder=folder,
-        zip=download_task.output,
-    )
+    minio = MinioHook(conn_id=MINIO_CONN_ID)
+    with HTTPFile(uri=info[FILE_URI_KEY], timeout=2 * 60, size=-1) as f:
+        file = minio.save(reader=f, bucket=MINIO_BUCKET, folder=folder)
 
-    return {
-        ROOT_FOLDER_KEY: folder,
-        TASK_KEY: task,
-    }
-
-
-def delete_files(extract_folder: MinioFolderLookup) -> DeleteFolderOperator:
-    delete_extracted_files = DeleteFolderOperator(
-        task_id='delete_files',
-        bucket=MINIO_BUCKET,
-        folder=extract_folder,
-        minio_conn_id='minio_default',
-    )
-
-    return delete_extracted_files
+    return file
