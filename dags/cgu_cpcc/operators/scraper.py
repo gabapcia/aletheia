@@ -12,7 +12,7 @@ BASE_URL = 'https://www.portaldatransparencia.gov.br/download-de-dados/cpcc'
 
 
 @task(multiple_outputs=False)
-def cpgf() -> Dict[str, str]:
+def cpcc() -> Dict[str, str]:
     with httpx.Client(timeout=30) as client:
         r = client.get(BASE_URL)
         r.raise_for_status()

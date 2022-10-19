@@ -12,7 +12,7 @@ from cgu_garantiasafra.operators.processing import memory
 
 
 @dag(
-    description='Seguro Defeso (Pescador Artesanal) da Controladoria-Geral da União',
+    description='Garantia-Safra da Controladoria-Geral da União',
     catchup=False,
     max_active_runs=1,
     start_date=datetime(2022, 1, 1, tz=timezone('UTC')),
@@ -36,6 +36,7 @@ def cgu_garantiasafra():
         task_id='in_memory_processing',
         retries=5,
         retry_delay=timedelta(seconds=10),
+        max_active_tis_per_dag=4,
     ).expand(file_data=files)
 
 

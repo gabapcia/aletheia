@@ -4,7 +4,7 @@ from pendulum.tz import timezone
 from airflow.decorators import dag
 
 from include.xcom_handler import drop_null
-from cgu_cpcc.operators.scraper import cpgf
+from cgu_cpcc.operators.scraper import cpcc
 from cgu_cpcc.operators.idempotence import save_filedate
 from cgu_cpcc.operators.file_storage import download
 from cgu_cpcc.operators.database import elasticsearch
@@ -21,7 +21,7 @@ from cgu_cpcc.operators.processing import memory
     default_args={},
 )
 def cgu_cpcc():
-    links_task = cpgf()
+    links_task = cpcc()
 
     idempotence_tasks = save_filedate.expand(link=links_task)
 
@@ -36,6 +36,7 @@ def cgu_cpcc():
         task_id='in_memory_processing',
         retries=5,
         retry_delay=timedelta(seconds=10),
+        max_active_tis_per_dag=4,
     ).expand(file_data=files)
 
 

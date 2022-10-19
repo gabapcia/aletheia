@@ -14,7 +14,7 @@ from airflow.decorators import task
 ELASTICSEARCH_CONN_ID = 'elasticsearch_default'
 ELASTICSEARCH_MAX_RETRIES = 5
 ELASTICSEARCH_TIMEOUT = 30
-ELASTICSEARCH_MAX_CHUNK_SIZE = 100_000
+ELASTICSEARCH_MAX_CHUNK_SIZE = 10_000
 
 
 def _open_zip(filepath: str, header: List[str]) -> Iterator[Dict[str, str]]:
@@ -89,7 +89,7 @@ def _load_people(filepath: str) -> Iterator[Dict[str, Any]]:
         yield person
 
 
-@task
+@task(multiple_outputs=False)
 def memory(file_data: Dict[str, str]) -> None:
     es = ElasticsearchHook(elasticsearch_conn_id=ELASTICSEARCH_CONN_ID)
 

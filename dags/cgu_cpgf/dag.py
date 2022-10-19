@@ -36,6 +36,7 @@ def cgu_cpgf():
         task_id='in_memory_processing',
         retries=5,
         retry_delay=timedelta(seconds=10),
+        max_active_tis_per_dag=4,
     ).expand(file_data=files)
 
 
