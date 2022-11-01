@@ -16,7 +16,7 @@ from cgu_cpgf.operators.processing import memory
     catchup=False,
     max_active_runs=1,
     start_date=datetime(2022, 1, 1, tz=timezone('UTC')),
-    schedule_interval='@daily',
+    schedule='@daily',
     tags=['CGU', 'PF', 'PJ'],
     default_args={},
 )

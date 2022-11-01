@@ -115,27 +115,21 @@ def generate_id(*args: List[str]) -> str:
     return str(id)
 
 
+payment_id_fields = [
+    'reference_date',
+    'competency_date',
+    'federative_unit',
+    'county_siafi_code',
+    'tax_id',
+    'nis',
+    'name',
+]
+
 payment_df = payment_df\
-    .withColumn('payment_id', generate_id(
-        'reference_date',
-        'competency_date',
-        'federative_unit',
-        'county_siafi_code',
-        'tax_id',
-        'nis',
-        'name',
-    ))
+    .withColumn('payment_id', generate_id(*payment_id_fields))
 
 withraw_df = withraw_df\
-    .withColumn('payment_id', generate_id(
-        'reference_date',
-        'competency_date',
-        'federative_unit',
-        'county_siafi_code',
-        'tax_id',
-        'nis',
-        'name',
-    ))\
+    .withColumn('payment_id', generate_id(*payment_id_fields))
 
 
 # Joining datasets

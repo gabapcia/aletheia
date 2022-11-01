@@ -1,4 +1,5 @@
 import uuid
+from typing import List
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DateType, FloatType
@@ -413,28 +414,6 @@ age_group_df = f.broadcast(spark.createDataFrame(
     schema=code_schema,
 ))
 
-country_df = f.broadcast(
-    spark.read
-        .schema(code_schema)
-        .option('header', 'false')
-        .option('delimiter', ';')
-        .option('quote', '"')
-        .option('encoding', 'ISO-8859-1')
-        .csv(f's3a://{COUNTRY_BUCKET_PATH}')
-        .withColumn('value', f.upper('value'))
-)
-
-qualification_df = f.broadcast(
-    spark.read
-        .schema(code_schema)
-        .option('header', 'false')
-        .option('delimiter', ';')
-        .option('quote', '"')
-        .option('encoding', 'ISO-8859-1')
-        .csv(f's3a://{PARTNER_QUALIFICATION_BUCKET_PATH}')
-        .withColumn('value', f.upper('value'))
-)
-
 
 # Loading the dataset
 partner_df = spark.read\
@@ -489,8 +468,10 @@ partner_df = partner_df\
 
 # Creating an unique ID
 @f.udf(StringType())
-def generate_id(base_cnpj: str, type_code: int, name: str, tax_id: str) -> str:
-    id = uuid.uuid5(uuid.NAMESPACE_OID, f'{base_cnpj}:{type_code}:{name}:{tax_id}')
+def generate_id(*args: List[str]) -> str:
+    name = ':'.join([str(a) for a in args])
+
+    id = uuid.uuid5(uuid.NAMESPACE_OID, name)
     return str(id)
 
 

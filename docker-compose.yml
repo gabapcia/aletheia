@@ -12,7 +12,7 @@ services:
 
   # Spark
   spark:
-    image: bitnami/spark:3.2.1
+    image: bitnami/spark:3.3.0
     environment:
       SPARK_MODE: master
     restart: unless-stopped
@@ -20,7 +20,7 @@ services:
       - 7077:7077
   
   spark-worker:
-    image: bitnami/spark:3.2.1
+    image: bitnami/spark:3.3.0
     environment:
       SPARK_MODE: worker
       SPARK_MASTER_URL: spark://spark:7077
@@ -28,7 +28,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 6G
+          memory: 5G
       replicas: 3
     depends_on:
       - spark

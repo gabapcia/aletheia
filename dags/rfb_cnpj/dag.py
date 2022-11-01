@@ -15,7 +15,7 @@ from rfb_cnpj.operators.processing import spark
     catchup=False,
     max_active_runs=1,
     start_date=datetime(2022, 1, 1, tz=timezone('UTC')),
-    schedule_interval='@daily',
+    schedule='@daily',
     tags=['RFB', 'PF', 'PJ'],
     default_args={},
 )

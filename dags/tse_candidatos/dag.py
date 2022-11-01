@@ -15,7 +15,7 @@ from tse_candidatos.operators.processing import spark
     catchup=False,
     max_active_runs=1,
     start_date=datetime(2022, 1, 1, tz=timezone('UTC')),
-    schedule_interval='@daily',
+    schedule='@daily',
     tags=['TSE', 'PF'],
     default_args={},
 )
